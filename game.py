@@ -7,6 +7,10 @@ import pygame, sys
 import random
 import numpy as np
 from PIL import Image
+from ypstruct import structure
+
+# Other files
+import utils
 
 """ DEFINE TILES """
 W = 0 #WATER
@@ -46,13 +50,24 @@ map1 = np.array([[G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                  [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                  [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
 
+""" GAME VARIABLES """
 TILESIZE = 40
 MAPWIDTH = len(map1[0])
 MAPHEIGHT = len(map1)
-
-""" GAME VARIABLES """
-img_path = "assets/"
 starting_pos = (50, (MAPHEIGHT*TILESIZE) // 2)
+ending_pos = (MAPWIDTH, (MAPHEIGHT*TILESIZE) // 2)
+img_path = "assets/"
+
+game = structure()
+game.tilesize = TILESIZE
+game.width = MAPWIDTH
+game.height = MAPHEIGHT
+game.start = starting_pos
+game.end = ending_pos
+game.map = map1
+game.cliff = X
+
+print("WHICH TILE: ", utils.which_tile(starting_pos, game))
 
 """ INIT GAME """
 pygame.init()
