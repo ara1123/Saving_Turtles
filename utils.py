@@ -18,7 +18,7 @@ def which_tile(pos, game):
   y_ind = game.height - (y // game.tilesize)
   return (x_ind, y_ind)
 
-# Generates a random path through the game
+# Generates a random path through the game.
 def create_random_path(game):
   lower_bound = 0
   high_bound = game.height
@@ -37,23 +37,22 @@ def create_random_path(game):
   def remove_tile(tile, choices):
     for i in range(len(choices)):
       if tile[0] == choices[i][0] and tile[1] == choices[i][1]:
-        return np.delete(choices, i)
+        return np.delete(choices, i, 0)
     return choices
 
+  # Create a tile-by-tile path
   current_tile = which_tile(start, game)
   prev_tile = current_tile
   while True:
     x, y = current_tile
     choices = np.array([[x + 1,y],
-                        [x - 1,y],
                         [x,y + 1],
                         [x,y - 1],
                         [x + 1,y + 1],
-                        [x + 1,y - 1],
-                        [x - 1,y + 1],
-                        [x - 1,y - 1]])
+                        [x + 1,y - 1]])
+
     # Make sure to not travel back to previous tile
-    choices = remove_tile(current_tile, choices)
+    choices = remove_tile(prev_tile, choices)
 
     # Randomly choose the next tile
     next_ind = random.randrange(len(choices))
