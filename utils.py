@@ -5,10 +5,7 @@ import numpy as np
 from ypstruct import structure
 from PIL import Image
 
-def image_to_tile(path_to_image, TILESIZE):
-  img = Image.open(path_to_image)
-  img = img.resize((TILESIZE, TILESIZE))
-  return pygame.image.fromstring(img.tobytes(), img.size, img.mode)
+
 
 # Which tile is this pixel in?
 def which_tile(pos, game):
@@ -20,10 +17,11 @@ def which_tile(pos, game):
 
 # Generates a random path through the game.
 def create_random_path(game):
-  lower_bound = 0
-  high_bound = game.height
+  tile_size = game.tilesize
+  lower_bound = 0 # Remember this is the top of the screen in pygame
+  high_bound = game.height * tile_size # And this is the bottom
   left_bound = 0
-  right_bound = game.width
+  right_bound = game.width * tile_size
   game_map = game.map
   start = game.start
   end = game.end
@@ -41,11 +39,14 @@ def create_random_path(game):
     return choices
 
   # Create a tile-by-tile path
-  current_tile = which_tile(start, game)
+  current_tile = start
   prev_tile = current_tile
   while True:
     x, y = current_tile
     choices = np.array([[x + 1,y],
+                        [x + 1,y],
+                        [x + 1,y],
+                        [x + 1,y],
                         [x,y + 1],
                         [x,y - 1],
                         [x + 1,y + 1],
