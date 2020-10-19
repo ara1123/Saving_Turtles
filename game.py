@@ -13,6 +13,7 @@ from ypstruct import structure
 import utils
 
 """ DEFINE TILES """
+TILESIZE = 40
 W = 0 #WATER
 G = 1 #GRASS
 R = 2 #ROAD
@@ -21,12 +22,13 @@ M = 4 #MUD
 X = 5 #CLIFF/FENCE - IMPASSABLE AREA
 
 """DEFINE TILE COLORS/TEXTURES"""
-WATER = (0,0,255)
-GRASS = (124,252,0)
-ROAD = (121,121,121)
-FOREST = (0,100,0)
-MUD = (102,51,0)
-IMPASSE = (0,0,0)
+img_path = "assets/"
+WATER = utils.image_to_tile(img_path + "water.png", TILESIZE)
+GRASS = utils.image_to_tile(img_path + "grass.png", TILESIZE)
+ROAD = utils.image_to_tile(img_path + "road.png", TILESIZE)
+FOREST = utils.image_to_tile(img_path + "forest.png", TILESIZE)
+MUD = utils.image_to_tile(img_path + "mud.png", TILESIZE)
+IMPASSE = utils.image_to_tile(img_path + "cliff.png", TILESIZE)
 
 """LINK TILES AND TEXTURES/COLORS"""
 TileTexture = {W : WATER,
@@ -39,24 +41,23 @@ TileTexture = {W : WATER,
 """DEFINE MAP"""
 map1 = np.array([[G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                  [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                 [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                 [G, G, G, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
-                 [G, G, G, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
-                 [G, G, G, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
-                 [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                 [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                 [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                 [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+                 [G, G, G, G, G, G, G, G, R, R, G, G, X, G, G, G, W],
+                 [G, G, G, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+                 [G, G, G, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+                 [G, G, G, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+                 [G, G, G, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
+                 [G, G, G, G, G, X, G, G, R, R, G, G, G, G, G, G, W],
+                 [G, G, M, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
+                 [G, G, M, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
                  [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                  [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
 
 """ GAME VARIABLES """
-TILESIZE = 40
 MAPWIDTH = len(map1[0])
 MAPHEIGHT = len(map1)
 starting_pos = (50, (MAPHEIGHT*TILESIZE) // 2)
 ending_pos = (MAPWIDTH, (MAPHEIGHT*TILESIZE) // 2)
-img_path = "assets/"
+
 
 game = structure()
 game.tilesize = TILESIZE
@@ -67,12 +68,12 @@ game.end = ending_pos
 game.map = map1
 game.cliff = X
 
-print("WHICH TILE: ", utils.which_tile(starting_pos, game))
-
 """ INIT GAME """
 pygame.init()
 screen = pygame.display.set_mode((MAPWIDTH*TILESIZE,MAPHEIGHT*TILESIZE))
 clock = pygame.time.Clock()
+
+print("PATH CHOICE: ", utils.create_random_path(game))
 
 """ GAME OBJECTS """
 # TURTLES
@@ -87,7 +88,7 @@ def display_map():
   """ DRAW MAP TO SCREEN """
   for row in range(MAPHEIGHT):
     for col in range(MAPWIDTH):
-      pygame.draw.rect(screen,TileTexture[map1[row][col]],(col*TILESIZE,row*TILESIZE,TILESIZE,TILESIZE))
+      screen.blit(TileTexture[map1[row][col]],(col*TILESIZE,row*TILESIZE,TILESIZE,TILESIZE))
 
 def turtle_safe(trect):
   return trect.centerx >= MAPWIDTH
