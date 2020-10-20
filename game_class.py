@@ -57,7 +57,7 @@ class game:
   width = len(map1[0])
   height = len(map1)
   start = (50, (height*tilesize) // 2)
-  end = (width, (height*tilesize) // 2)
+  end = (width*tilesize, (height*tilesize) // 2)
   iteration = 0 # Used for keeping turtle positions consistent
   game_active = True
 
@@ -106,6 +106,5 @@ class game:
       # turtle_rect.centerx += 1
       # screen.blit(turtle_surface, turtle_rect)
       gu.move_turtles(self)
-
       pygame.display.update()
       self.clock.tick(120)

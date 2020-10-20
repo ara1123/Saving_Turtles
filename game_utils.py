@@ -58,8 +58,9 @@ def create_random_path(game):
   left_bound = 0
   right_bound = game.width
   game_map = game.map1
-  start = game.start
-  end = game.end
+  start = which_tile(game.start, game)
+  end = which_tile(game.end, game)
+  print("End, start", end, start)
   tile_wise_path = []
 
   def is_end_path(pos):
@@ -74,7 +75,7 @@ def create_random_path(game):
     return choices
 
   # Create a tile-by-tile path
-  current_tile = which_tile(start, game)
+  current_tile = start
   prev_tile = current_tile
   while True:
     x, y = current_tile
@@ -98,4 +99,5 @@ def create_random_path(game):
       break
     current_tile = (choices[next_ind][0],choices[next_ind][1])
 
+  print("\nCHOSE THIS PATH: ", tile_wise_path)
   return tile_wise_path
