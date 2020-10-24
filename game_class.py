@@ -33,11 +33,11 @@ class game:
 
   """LINK TILES AND TEXTURES/COLORS"""
   TileTexture = {W : WATER,
-                G : GRASS,
-                R : ROAD,
-                F : FOREST,
-                M : MUD,
-                X : IMPASSE}
+                 G : GRASS,
+                 R : ROAD,
+                 F : FOREST,
+                 M : MUD,
+                 X : IMPASSE}
 
   """DEFINE MAP"""
   map1 = np.array([[G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
@@ -58,7 +58,6 @@ class game:
   height = len(map1)
   start = (50, (height*tilesize) // 2)
   end = (width*tilesize, (height*tilesize) // 2)
-  iteration = 0 # Used for keeping turtle positions consistent
   game_active = True
 
   """ GAME OBJECTS """
@@ -72,7 +71,7 @@ class game:
   def init_turtles(self, params):
     num_turtles = params.npop
     turtle_img = Image.open(self.img_path + "turtle.png")
-    for n in range(num_turtles - 1):
+    for n in range(num_turtles):
       turtle_img = turtle_img.resize((self.tilesize // 2, self.tilesize // 2))
       turtle_surface = pygame.image.fromstring(turtle_img.tobytes(), turtle_img.size, turtle_img.mode)
       turtle_surface = pygame.transform.rotozoom(turtle_surface, -90, 1)
@@ -81,6 +80,7 @@ class game:
       turtle.surf = turtle_surface
       turtle.rect = turtle_rect
       turtle.path = gu.create_random_path(self)
+      turtle.iteration = 0
       self.turtle_list.append(turtle)
 
   def set_turtle_list(self, turtles):

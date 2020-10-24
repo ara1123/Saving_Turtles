@@ -19,24 +19,29 @@ def which_tile(pos, game):
   y_ind = game.height - (y // game.tilesize)
   return (x_ind, y_ind)
 
+# def killturtle(turtle)
+
+# def calc_fitness(turtle)
+
 # Takes a numpy array of turtle objects, and the game object
 def move_turtles(game):
   for turtle in game.turtle_list:
-    ind = game.iteration
+    path_ind = turtle.iteration
     tilesize = game.tilesize
     posx = turtle.rect.centerx # Pixel
     posy = turtle.rect.centery
-    tile = which_tile((posx,posy),game)
-    # print("\nGoing to ", turtle.path[ind])
+    current_tile = which_tile((posx,posy),game)
     # print("\nAt ", which_tile((posx,posy),game))
-    if ind >= len(turtle.path) - 1:
+    if path_ind >= len(turtle.path) - 1:
       game.screen.blit(turtle.surf, turtle.rect)
       continue
-    if turtle.path[ind] == tile:
-      ind += 1
-      game.iteration = ind
-    diffx = turtle.path[ind][0] - tile[0]
-    diffy = turtle.path[ind][1] - tile[1]
+    if turtle.path[path_ind] == current_tile:
+      path_ind += 1
+      turtle.iteration = path_ind
+
+    # print("\nGoing to ", turtle.path[path_ind])
+    diffx = turtle.path[path_ind][0] - current_tile[0]
+    diffy = turtle.path[path_ind][1] - current_tile[1]
     movex = 1
     movey = 1
     if not diffy:
@@ -49,14 +54,16 @@ def move_turtles(game):
       movex *= -1
     turtle.rect.centerx += movex
     turtle.rect.centery += movey
+    # print("\nMoved to ", which_tile((turtle.rect.centerx,turtle.rect.centery),game))
     game.screen.blit(turtle.surf, turtle.rect)
 
 def create_random_path(game):
   tile_size = game.tilesize
-  lower_bound = 0 # Remember this is the top of the screen in pygame
-  high_bound = game.height # And this is the bottom
-  left_bound = 0
-  right_bound = game.width
+  lower_bound = 0 - 1# Remember this is the top of the screen in pygame
+  high_bound = game.height + 1# And this is the bottom
+  left_bound = 0 - 1
+  right_bound = game.width + 1
+  print("UPPER LOWER LEFT RIGHT", high_bound, lower_bound, left_bound, right_bound)
   game_map = game.map1
   start = which_tile(game.start, game)
   end = which_tile(game.end, game)
