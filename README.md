@@ -3,5 +3,5 @@ Using a genetic algorithm to model turtles trying to cross the road in a stochas
 
 Current way to run is to run
 ```
-python3 game.py
+python3 main.py
 ```
