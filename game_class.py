@@ -86,7 +86,7 @@ class game:
 
   """ EVENTS """
   SPAWNCAR = pygame.USEREVENT
-  pygame.time.set_timer(SPAWNCAR, 2400)
+  pygame.time.set_timer(SPAWNCAR, 900)
 
   """ HELPER FUNCTIONS """
 
@@ -105,7 +105,7 @@ class game:
     bot = random.randrange(2) # Random chance that car starts at bottom or top
     spawnpoint = (None, None)
     car = structure()
-    car.surf = gu.load_car(self.img_path + "car2.png", self.tilesize)
+    car.surf = gu.load_car(self.img_path + "car1.png", self.tilesize)
     if bot == 1:
       spawnpoint = (self.car_spawn_top, 0)
       car.direction = 1
@@ -245,7 +245,6 @@ class game:
           sys.exit()
         if event.type == self.SPAWNCAR:
           self.spawn_car()
-
       display_map()
       if self.turtle_list:
         self.move_turtles()

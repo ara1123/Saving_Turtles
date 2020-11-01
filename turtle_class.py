@@ -12,3 +12,6 @@ class turtle(object):
     self.rect = self.surf.get_rect(center = turtle_params.start)
     self.path = turtle_params.path
     self.iteration = 0
+    self.dead = False
+    self.stopped = False
+    self.score = 0
