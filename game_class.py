@@ -6,6 +6,7 @@
 import pygame, sys
 import random
 import numpy as np
+from turtle_class import turtle
 from PIL import Image
 from ypstruct import structure
 
@@ -63,17 +64,66 @@ class game:
                X : 0}
 
   """ GAME VARIABLES """
+  # Map
   width = len(map1[0])
   height = len(map1)
   start = (50, (height*tilesize) // 2)
   end = (width*tilesize, (height*tilesize) // 2)
   game_active = True
 
+  # Car
+  road_edge_left = 8
+  road_edge_right = 10
+  car_spawn_top = road_edge_left * tilesize + (tilesize // 2)
+  car_spawn_bot = road_edge_right * tilesize - (tilesize // 2)
+  car_speed = 10
+  print("THESE", road_edge_left, road_edge_right)
+
   """ GAME OBJECTS """
   turtle_list = []
+  car_list = []
   clock = pygame.time.Clock()
 
+  """ EVENTS """
+  SPAWNCAR = pygame.USEREVENT
+  pygame.time.set_timer(SPAWNCAR, 2400)
+
   """ HELPER FUNCTIONS """
+
+  def init_turtles(self, params):
+    num_turtles = params.npop
+    turt_params = structure()
+    turt_params.tilesize = self.tilesize
+    turt_params.start = self.start
+    for n in range(num_turtles):
+      turt_params.path = self.create_random_path()
+      t_obj = turtle(turt_params)
+      self.turtle_list.append(t_obj)
+
+  # Assumes a road of width 2 that vertically bisects the map in a straight line
+  def spawn_car(self):
+    bot = random.randrange(2) # Random chance that car starts at bottom or top
+    spawnpoint = (None, None)
+    car = structure()
+    car.surf = gu.load_car(self.img_path + "car2.png", self.tilesize)
+    if bot == 1:
+      spawnpoint = (self.car_spawn_top, 0)
+      car.direction = 1
+      car.surf = pygame.transform.rotozoom(car.surf, -90, 1)
+    else:
+      spawnpoint = (self.car_spawn_bot, self.height * self.tilesize)
+      car.direction = -1
+      car.surf = pygame.transform.rotozoom(car.surf, 90, 1)
+
+    car.rect = car.surf.get_rect(center = spawnpoint)
+    self.car_list.append(car)
+
+  def move_cars(self):
+    if not self.car_list:
+      return
+    for car in self.car_list:
+      car.rect.centery += self.car_speed * car.direction
+      self.screen.blit(car.surf, car.rect)
 
   def get_tile_speed(self, turtle):
     pos = (turtle.rect.centerx, turtle.rect.centery)
@@ -84,8 +134,8 @@ class game:
 
   def create_random_path(self):
     tile_size = self.tilesize
-    lower_bound = 0 - 1# Remember this is the top of the screen in pygame
-    high_bound = self.height + 1# And this is the bottom
+    lower_bound = 0 - 1 # Remember this is the top of the screen in pygame
+    high_bound = self.height + 1 # And this is the bottom
     left_bound = 0 - 1
     right_bound = self.width + 1
     game_map = self.map1
@@ -177,21 +227,6 @@ class game:
     pygame.init()
     self.screen = pygame.display.set_mode((self.width*self.tilesize,self.height*self.tilesize))
 
-  def init_turtles(self, params):
-    num_turtles = params.npop
-    turtle_img = Image.open(self.img_path + "turtle.png")
-    for n in range(num_turtles):
-      turtle_img = turtle_img.resize((self.tilesize // 2, self.tilesize // 2))
-      turtle_surface = pygame.image.fromstring(turtle_img.tobytes(), turtle_img.size, turtle_img.mode)
-      turtle_surface = pygame.transform.rotozoom(turtle_surface, -90, 1)
-      turtle_rect = turtle_surface.get_rect(center = self.start)
-      turtle = structure()
-      turtle.surf = turtle_surface
-      turtle.rect = turtle_rect
-      turtle.path = self.create_random_path()
-      turtle.iteration = 0
-      self.turtle_list.append(turtle)
-
   def set_turtle_list(self, turtles):
     self.turtle_list = turtles
 
@@ -208,8 +243,12 @@ class game:
         if event.type == pygame.QUIT:
           pygame.quit()
           sys.exit()
+        if event.type == self.SPAWNCAR:
+          self.spawn_car()
 
       display_map()
-      self.move_turtles()
+      if self.turtle_list:
+        self.move_turtles()
+      self.move_cars()
       pygame.display.update()
       self.clock.tick(60)
