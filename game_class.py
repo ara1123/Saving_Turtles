@@ -76,7 +76,8 @@ class game:
   road_edge_right = 10
   car_spawn_top = road_edge_left * tilesize + (tilesize // 2)
   car_spawn_bot = road_edge_right * tilesize - (tilesize // 2)
-  car_speed = 10
+  car_speed = 5
+  car_picture = img_path + "car3.png"
   print("THESE", road_edge_left, road_edge_right)
 
   """ GAME OBJECTS """
@@ -105,15 +106,15 @@ class game:
     bot = random.randrange(2) # Random chance that car starts at bottom or top
     spawnpoint = (None, None)
     car = structure()
-    car.surf = gu.load_car(self.img_path + "car1.png", self.tilesize)
+    car.surf = gu.load_car(self.car_picture, self.tilesize)
     if bot == 1:
       spawnpoint = (self.car_spawn_top, 0)
       car.direction = 1
-      car.surf = pygame.transform.rotozoom(car.surf, -90, 1)
+      car.surf = pygame.transform.rotozoom(car.surf, 90, 1)
     else:
       spawnpoint = (self.car_spawn_bot, self.height * self.tilesize)
       car.direction = -1
-      car.surf = pygame.transform.rotozoom(car.surf, 90, 1)
+      car.surf = pygame.transform.rotozoom(car.surf, -90, 1)
 
     car.rect = car.surf.get_rect(center = spawnpoint)
     self.car_list.append(car)
@@ -129,7 +130,6 @@ class game:
     pos = (turtle.rect.centerx, turtle.rect.centery)
     x, y = self.which_tile(pos)
     tile_type = self.map1[x][y]
-    print("TILE_TYPE ", tile_type)
     return self.TileSpeed[tile_type]
 
   def create_random_path(self):
@@ -191,6 +191,7 @@ class game:
 
   def move_turtles(self):
     for turtle in self.turtle_list:
+      animate = False
       path_ind = turtle.iteration
       tilesize = self.tilesize
       posx = turtle.rect.centerx # Pixel
@@ -202,10 +203,13 @@ class game:
       if turtle.path[path_ind] == current_tile:
         path_ind += 1
         turtle.iteration = path_ind
+        animate =  True
 
       # print("\nGoing to ", turtle.path[path_ind])
       diffx = turtle.path[path_ind][0] - current_tile[0]
       diffy = turtle.path[path_ind][1] - current_tile[1]
+      if animate:
+        turtle.animate(diffx,diffy)
       movex = 1
       movey = 1
       if not diffy:

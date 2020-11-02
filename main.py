@@ -4,7 +4,7 @@ from ypstruct import structure
 
 
 params = structure()
-params.npop = 1
+params.npop = 10
 
 turtle_game = game()
 turtle_game.init_game()
