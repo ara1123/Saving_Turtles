@@ -232,8 +232,9 @@ class game:
       # print("\nMoved to ", which_tile((turtle.rect.centerx,turtle.rect.centery),game))
       self.screen.blit(turtle.surf, turtle.rect)
 
-  def check_collision():
 
+  def check_collision():
+    return None
 
   """MAIN GAME FUNCTIONS"""
   def init_game(self):
