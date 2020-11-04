@@ -76,7 +76,8 @@ class game:
   road_edge_right = 10
   car_spawn_top = road_edge_left * tilesize + (tilesize // 2)
   car_spawn_bot = road_edge_right * tilesize - (tilesize // 2)
-  car_speed = 10
+  car_speed = 5
+  car_picture = img_path + "car3.png"
   print("THESE", road_edge_left, road_edge_right)
 
   """ GAME OBJECTS """
@@ -102,18 +103,18 @@ class game:
 
   # Assumes a road of width 2 that vertically bisects the map in a straight line
   def spawn_car(self):
-    bot = random.randrange(2) # Random chance that car starts at bottom or top
+    top = random.randrange(2) # Random chance that car starts at bottom or top
     spawnpoint = (None, None)
     car = structure()
-    car.surf = gu.load_car(self.img_path + "car1.png", self.tilesize)
-    if bot == 1:
+    car.surf = gu.load_car(self.car_picture, self.tilesize)
+    if top == 1:
       spawnpoint = (self.car_spawn_top, 0)
       car.direction = 1
-      car.surf = pygame.transform.rotozoom(car.surf, -90, 1)
+      car.surf = pygame.transform.rotozoom(car.surf, 90, 1)
     else:
       spawnpoint = (self.car_spawn_bot, self.height * self.tilesize)
       car.direction = -1
-      car.surf = pygame.transform.rotozoom(car.surf, 90, 1)
+      car.surf = pygame.transform.rotozoom(car.surf, -90, 1)
 
     car.rect = car.surf.get_rect(center = spawnpoint)
     self.car_list.append(car)
@@ -122,14 +123,23 @@ class game:
     if not self.car_list:
       return
     for car in self.car_list:
+      # Check if car is out of map
+      if car.direction == -1 and car.rect.centery < 0:
+        self.car_list.remove(car)
+        continue
+      elif car.direction == 1 and car.rect.centery > (self.height * self.tilesize):
+        self.car_list.remove(car)
+        continue
       car.rect.centery += self.car_speed * car.direction
       self.screen.blit(car.surf, car.rect)
+
+  def in_bounds(x, y):
+    return (x < 0 or x > length - 1) or (y < 0 or y > height - 1)
 
   def get_tile_speed(self, turtle):
     pos = (turtle.rect.centerx, turtle.rect.centery)
     x, y = self.which_tile(pos)
     tile_type = self.map1[x][y]
-    print("TILE_TYPE ", tile_type)
     return self.TileSpeed[tile_type]
 
   def create_random_path(self):
@@ -186,7 +196,7 @@ class game:
     x = pos[0]
     y = pos[1]
     x_ind = x // self.tilesize
-    y_ind = self.height - (y // self.tilesize)
+    y_ind = (self.height - 1) - (y // self.tilesize)
     return (x_ind, y_ind)
 
   def move_turtles(self):
@@ -202,7 +212,6 @@ class game:
       if turtle.path[path_ind] == current_tile:
         path_ind += 1
         turtle.iteration = path_ind
-
       # print("\nGoing to ", turtle.path[path_ind])
       diffx = turtle.path[path_ind][0] - current_tile[0]
       diffy = turtle.path[path_ind][1] - current_tile[1]
@@ -219,8 +228,13 @@ class game:
       speed = self.get_tile_speed(turtle)
       turtle.rect.centerx += speed * movex
       turtle.rect.centery += speed * movey
+      turtle.animate(movex, movey)
       # print("\nMoved to ", which_tile((turtle.rect.centerx,turtle.rect.centery),game))
       self.screen.blit(turtle.surf, turtle.rect)
+
+
+  def check_collision():
+    return None
 
   """MAIN GAME FUNCTIONS"""
   def init_game(self):
