@@ -32,6 +32,9 @@ class game:
   MUD = gu.image_to_tile(img_path + "mud.png", tilesize)
   IMPASSE = gu.image_to_tile(img_path + "cliff.png", tilesize)
 
+  """ OTHER TEXTURES AND THINGS """
+  REDX = None
+
   """LINK TILES AND TEXTURES/COLORS"""
   TileTexture = {W : WATER,
                  G : GRASS,
@@ -41,16 +44,16 @@ class game:
                  X : IMPASSE}
 
   """DEFINE MAP"""
-  map1 = np.array([[G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+  map1 = np.array([[F, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, G, G, G, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, G, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, G, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, G, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, G, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, G, G, G, X, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, M, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, M, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
+                   [G, G, F, G, G, G, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, G, G, X, G, G, R, R, G, G, G, G, G, G, W],
+                   [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
+                   [G, G, F, M, G, G, G, G, R, R, G, G, F, F, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
 
@@ -61,7 +64,7 @@ class game:
                R : 3,
                F : 1,
                M : 2,
-               X : 0}
+               X : 1}
 
   """ GAME VARIABLES """
   # Map
@@ -70,6 +73,8 @@ class game:
   start = (50, (height*tilesize) // 2)
   end = (width*tilesize, (height*tilesize) // 2)
   game_active = True
+  wall_list = []
+  redx_list = []
 
   # Car
   road_edge_left = 8
@@ -82,15 +87,15 @@ class game:
 
   """ GAME OBJECTS """
   turtle_list = []
+  retired_turtles = [] # Put turtles here once they are dead or stuck
   car_list = []
   clock = pygame.time.Clock()
 
   """ EVENTS """
   SPAWNCAR = pygame.USEREVENT
-  pygame.time.set_timer(SPAWNCAR, 900)
+  pygame.time.set_timer(SPAWNCAR, 900) # Will probably make this a lot slower in the actual game
 
   """ HELPER FUNCTIONS """
-
   def init_turtles(self, params):
     num_turtles = params.npop
     turt_params = structure()
@@ -106,7 +111,7 @@ class game:
     top = random.randrange(2) # Random chance that car starts at bottom or top
     spawnpoint = (None, None)
     car = structure()
-    car.surf = gu.load_car(self.car_picture, self.tilesize)
+    car.surf = gu.load_tilesz(self.car_picture, self.tilesize)
     if top == 1:
       spawnpoint = (self.car_spawn_top, 0)
       car.direction = 1
@@ -120,8 +125,6 @@ class game:
     self.car_list.append(car)
 
   def move_cars(self):
-    if not self.car_list:
-      return
     for car in self.car_list:
       # Check if car is out of map
       if car.direction == -1 and car.rect.centery < 0:
@@ -132,9 +135,6 @@ class game:
         continue
       car.rect.centery += self.car_speed * car.direction
       self.screen.blit(car.surf, car.rect)
-
-  def in_bounds(x, y):
-    return (x < 0 or x > length - 1) or (y < 0 or y > height - 1)
 
   def get_tile_speed(self, turtle):
     pos = (turtle.rect.centerx, turtle.rect.centery)
@@ -232,14 +232,79 @@ class game:
       # print("\nMoved to ", which_tile((turtle.rect.centerx,turtle.rect.centery),game))
       self.screen.blit(turtle.surf, turtle.rect)
 
+  def pop_wall_list(self):
+    res = []
+    for row in range(self.height):
+        for col in range(self.width):
+          if self.map1[row][col] == self.X:
+            surface = self.TileTexture[self.map1[row][col]]
+            rect = surface.get_rect(topleft = (col * self.tilesize, row * self.tilesize))
+            res.append(rect)
+    return res
 
-  def check_collision():
-    return None
+  # Call this function when a turtle dies or is stopped.
+  # This does several things
+  # Puts the stopped turtles in a retired list
+  # Adds a red x to represent each turtle.
+  def filter_out_turtles(self):
+    res_list = []
+    for turtle in self.turtle_list:
+      if turtle.stopped:
+        # Get a red X
+        pos = (turtle.rect.centerx,turtle.rect.centery)
+        redx = structure()
+        redx.surf = self.REDX
+        redx.rect = redx.surf.get_rect(center = pos)
+        self.redx_list.append(redx)
+
+        # Slice the path to the actual end
+        end = turtle.iteration
+        turtle.path = turtle.path[:end]
+
+        # Add to retired turtles list
+        self.retired_turtles.append(turtle)
+      else:
+        res_list.append(turtle)
+    self.turtle_list = res_list
+
+  def display_redx(self):
+    for x in self.redx_list:
+      self.screen.blit(x.surf, x.rect)
+
+  def in_map(self, turtle):
+    high = self.height * self.tilesize
+    right = self.width * self.tilesize
+    low = 0
+    left = 0
+    posx = turtle.rect.centerx
+    posy = turtle.rect.centery
+    if posx > right or posx < left:
+      return False
+    elif posy > high or posy < low:
+      return False
+    else:
+      return True
+
+  def check_collision(self):
+    # Check for wall and car collisions
+    for turtle in self.turtle_list:
+      if not self.in_map(turtle):
+        turtle.stop()
+      for wall in self.wall_list:
+        if turtle.rect.colliderect(wall):
+          print("HIT WALL")
+          turtle.stop()
+      for car in self.car_list:
+        if turtle.rect.colliderect(car):
+          print("HIT CAR")
+          turtle.kill()
 
   """MAIN GAME FUNCTIONS"""
   def init_game(self):
     pygame.init()
     self.screen = pygame.display.set_mode((self.width*self.tilesize,self.height*self.tilesize))
+    self.REDX = gu.load_half_tilesz(self.img_path + "redx.png", self.tilesize)
+    self.wall_list = self.pop_wall_list()
 
   def set_turtle_list(self, turtles):
     self.turtle_list = turtles
@@ -249,7 +314,9 @@ class game:
       """ DRAW MAP TO SCREEN """
       for row in range(self.height):
         for col in range(self.width):
-          self.screen.blit(self.TileTexture[self.map1[row][col]],(col*self.tilesize,row*self.tilesize,self.tilesize,self.tilesize))
+          surface = self.TileTexture[self.map1[row][col]]
+          rect = surface.get_rect(topleft = (col * self.tilesize, row * self.tilesize))
+          self.screen.blit(surface,rect)
 
     """ MAIN LOOP """
     while True:
@@ -262,6 +329,11 @@ class game:
       display_map()
       if self.turtle_list:
         self.move_turtles()
-      self.move_cars()
+      if self.car_list:
+        self.move_cars()
+      self.check_collision()
+      self.filter_out_turtles()
+      if self.redx_list:
+        self.display_redx()
       pygame.display.update()
       self.clock.tick(60)

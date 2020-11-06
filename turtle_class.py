@@ -47,7 +47,6 @@ class turtle(object):
 
   def animate(self, dx, dy):
     angle = math.degrees(math.atan2(-dy, dx))
-    print(dx, dy, "So an angle of ", angle)
     rot_surf = animations[angle]
     rot_rect = rot_surf.get_rect(center = (self.rect.centerx, self.rect.centery))
     self.surf = rot_surf
