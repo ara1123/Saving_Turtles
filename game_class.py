@@ -6,12 +6,13 @@
 import pygame, sys
 import random
 import numpy as np
-from turtle_class import turtle
 from PIL import Image
 from ypstruct import structure
 
 # Other files
 import game_utils as gu
+from turtle_class import turtle
+from bridge_class import bridge
 
 class game:
   """ DEFINE TILES """
@@ -319,6 +320,8 @@ class game:
           self.screen.blit(surface,rect)
 
     """ MAIN LOOP """
+    if not self.turtle_list:
+      return
     while True:
       for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -337,3 +340,7 @@ class game:
         self.display_redx()
       pygame.display.update()
       self.clock.tick(60)
+
+  def reset(self):
+    self.redx_list.clear()
+    self.car_list.clear()
