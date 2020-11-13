@@ -6,12 +6,13 @@
 import pygame, sys
 import random
 import numpy as np
-from turtle_class import turtle
 from PIL import Image
 from ypstruct import structure
 
 # Other files
 import game_utils as gu
+from turtle_class import turtle
+from bridge_class import bridge
 
 class game:
   """ DEFINE TILES """
@@ -84,6 +85,15 @@ class game:
   car_speed = 5
   car_picture = img_path + "car3.png"
   print("THESE", road_edge_left, road_edge_right)
+
+  # Bridge
+  bridge_params = structure()
+  bridge_params.top = height - 1
+  bridge_params.bot = 0
+  bridge_params.left = 8
+  bridge_params.tilesize = tilesize
+  brg = bridge(bridge_params)
+
 
   """ GAME OBJECTS """
   turtle_list = []
@@ -230,6 +240,7 @@ class game:
       turtle.rect.centery += speed * movey
       turtle.animate(movex, movey)
       # print("\nMoved to ", which_tile((turtle.rect.centerx,turtle.rect.centery),game))
+      turtle.effort += 1
       self.screen.blit(turtle.surf, turtle.rect)
 
   def pop_wall_list(self):
@@ -296,8 +307,14 @@ class game:
           turtle.stop()
       for car in self.car_list:
         if turtle.rect.colliderect(car):
+          if turtle.rect.colliderect(self.brg.rect):
+            turtle.bridge = True
+            continue
           print("HIT CAR")
           turtle.kill()
+
+  def display_bridge(self):
+    self.screen.blit(self.brg.surf, self.brg.rect)
 
   """MAIN GAME FUNCTIONS"""
   def init_game(self):
@@ -305,6 +322,7 @@ class game:
     self.screen = pygame.display.set_mode((self.width*self.tilesize,self.height*self.tilesize))
     self.REDX = gu.load_half_tilesz(self.img_path + "redx.png", self.tilesize)
     self.wall_list = self.pop_wall_list()
+    self.brg.load_pic(self.img_path + "bridge.jpeg", self.tilesize)
 
   def set_turtle_list(self, turtles):
     self.turtle_list = turtles
@@ -320,6 +338,8 @@ class game:
 
     """ MAIN LOOP """
     while True:
+      if not self.turtle_list:
+        return
       for event in pygame.event.get():
         if event.type == pygame.QUIT:
           pygame.quit()
@@ -335,5 +355,10 @@ class game:
       self.filter_out_turtles()
       if self.redx_list:
         self.display_redx()
+      self.display_bridge()
       pygame.display.update()
       self.clock.tick(60)
+
+  def reset(self):
+    self.redx_list.clear()
+    self.car_list.clear()

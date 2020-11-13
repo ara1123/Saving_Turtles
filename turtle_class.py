@@ -30,7 +30,9 @@ class turtle(object):
     self.effort = 0
     self.dead = False
     self.stopped = False
-    self.score = 0
+    self.bridge = False
+    self.cost = 0
+    self.safe = False
 
   def kill(self):
     self.dead = True
