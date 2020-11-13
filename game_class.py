@@ -240,6 +240,7 @@ class game:
       turtle.rect.centery += speed * movey
       turtle.animate(movex, movey)
       # print("\nMoved to ", which_tile((turtle.rect.centerx,turtle.rect.centery),game))
+      turtle.effort += 1
       self.screen.blit(turtle.surf, turtle.rect)
 
   def pop_wall_list(self):
@@ -307,6 +308,7 @@ class game:
       for car in self.car_list:
         if turtle.rect.colliderect(car):
           if turtle.rect.colliderect(self.brg.rect):
+            turtle.bridge = True
             continue
           print("HIT CAR")
           turtle.kill()
