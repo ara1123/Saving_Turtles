@@ -44,7 +44,7 @@ class game:
                  M : MUD,
                  X : IMPASSE}
 
-  """DEFINE MAP"""
+  """DEFINE MAP
   map1 = np.array([[F, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, G, G, G, G, G, R, R, G, G, X, G, G, G, W],
@@ -56,7 +56,24 @@ class game:
                    [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, G, G, G, G, R, R, G, G, F, F, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
+                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])"""
+
+  """MAP RANDOMIZER"""
+
+  map1 = np.array([random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17),
+                   random.choices(Tiles, k=17)])
+
+
 
   """ DEFINE TILE SPEEDS """
   # Will multiply the movement by these numbers
