@@ -131,9 +131,6 @@ class game:
 
     def init_turtles(self, params):
         num_turtles = params.npop
-
-        # CALL GA HERE, passing in PROBLEM and PARAMs
-
         turt_params = structure()
         turt_params.tilesize = self.tilesize
         turt_params.start = self.start
