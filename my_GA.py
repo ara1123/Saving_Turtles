@@ -28,23 +28,23 @@ def run(problem, params):
     sigma = params.sigma
 
     # Empty Individual Template
-    empty_individual = structure()
-    empty_individual.position = None
-    empty_individual.cost = None
+    empty_turtle_shell = structure()
+    empty_turtle_shell.position = None
+    empty_turtle_shell.cost = None
 
     # Best Solution found
-    best_solution = empty_individual.deepcopy
-    best_solution.cost = np.inf               # This is the default value, which should be the worst case scenario 
+    best_solution = structure()
+    best_solution.cost = np.inf               # This is the default value, which should be the worst case scenario
 
 
     # Creating initial population
-    pop = empty_individual.repeat(npop)
+    pop = empty_turtle_shell.repeat(npop)
 
     for i in range(npop):
         pop[i].position = np.random.uniform(varmin, varmax, nvar)
         pop[i].cost = costfunc(pop[i].position)
         if pop[i].cost < best_solution.cost:
-            best_solution = pop[i].deepcopy
+            best_solution.cost = pop[i].cost
 
     # Best cost of Iterations
     best_cost_over_iterations = np.empty(maxit)     # array of maxit empty spots

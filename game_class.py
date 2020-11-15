@@ -26,7 +26,7 @@ class game:
     X = 5  # CLIFF/FENCE - IMPASSABLE AREA
 
     # Defining tiles that should autopopulate in the map
-    Tiles = (G, F, M, X)
+    Tiles = (G, F, M)
 
     """DEFINE TILE COLORS/TEXTURES"""
     img_path = "assets/"
@@ -131,6 +131,9 @@ class game:
 
     def init_turtles(self, params):
         num_turtles = params.npop
+
+        # CALL GA HERE, passing in PROBLEM and PARAMs
+
         turt_params = structure()
         turt_params.tilesize = self.tilesize
         turt_params.start = self.start
@@ -138,6 +141,30 @@ class game:
             turt_params.path = self.create_random_path()
             t_obj = turtle(turt_params)
             self.turtle_list.append(t_obj)
+
+        #  here we should have a list of turtle objects, turtle_list
+
+    def reward_function(self, turtle):
+        positioning = turtle.path
+        x_pos_old = -1
+        reward = 0
+
+        for coord in positioning:
+            if coord[0] > x_pos_old:
+                reward += 5
+            if coord[0] < x_pos_old:
+                reward -= 8
+            if turtle.bridge:
+                reward += 50
+            if turtle.dead:
+                reward -= 1000
+            if turtle.stopped:
+                reward -= 30
+            x_pos_old = coord[0]
+
+        return reward
+
+
 
     # Assumes a road of width 2 that vertically bisects the map in a straight line
     def spawn_car(self):
@@ -172,7 +199,7 @@ class game:
     def get_tile_speed(self, turtle):
         pos = (turtle.rect.centerx, turtle.rect.centery)
         x, y = self.which_tile(pos)
-        tile_type = self.map1[x][y]
+        tile_type = self.map1[x-1][y]
         return self.TileSpeed[tile_type]
 
     def create_random_path(self):

@@ -12,4 +12,7 @@ turtle_game.init_game()
 while True:
   turtle_game.init_turtles(params)
   turtle_game.run_game()
+
+  for turtle in turtle_game.retired_turtles:
+    print(turtle_game.reward_function(turtle))
   turtle_game.reset()

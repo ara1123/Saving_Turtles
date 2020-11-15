@@ -50,7 +50,7 @@ class turtle(object):
     self.dead = False
     self.stopped = False
     self.bridge = False
-    self.cost = 0
+    self.reward = 0
     self.safe = False
 
   def kill(self):

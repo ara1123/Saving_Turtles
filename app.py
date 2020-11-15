@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from ypstruct import structure
 import my_GA as ga
+from turtle_class import turtle
+from bridge_class import bridge
 
 
 # Sphere Cost Function
@@ -28,7 +30,7 @@ problem.varmax = 10         # Maximum value of variables
 # GA Parameters
 params = structure()
 params.maxit = 100          # Max iterations
-params.npop = 20            # Max population size (chromosomes)
+params.npop = 100           # Max population size (chromosomes)
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
 params.gamma = 0.1          # Randomization factor between parents and children
 params.mu = 0.1             # The mean for the mutation function, which is a Gaussian distribution
@@ -40,12 +42,13 @@ params.beta = 1             # Parent selection variable
 out = ga.run(problem,params)
 
 
-# Results
-#plt.plot(out.bestcost)
-plt.semilogy(out.bestcost)      # Using a logarithmic scale for y axis, to better see improvement
+"""# Results
+plt.plot(out.bestcost)
+#plt.semilogy(out.bestcost)      # Using a logarithmic scale for y axis, to better see improvement
 plt.xlim(0, params.maxit)
 plt.ylabel('Best Cost')
 plt.xlabel('Iterations')
 plt.title('Genetic Algorithm')
 plt.grid(True)
 plt.show()
+"""
