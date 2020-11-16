@@ -196,7 +196,7 @@ class game:
     def get_tile_speed(self, turtle):
         pos = (turtle.rect.centerx, turtle.rect.centery)
         x, y = self.which_tile(pos)
-        tile_type = self.map1[x-1][y]
+        tile_type = self.map1[x-1][y-1]
         return self.TileSpeed[tile_type]
 
     def create_random_path(self):
