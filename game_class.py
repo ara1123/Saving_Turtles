@@ -141,7 +141,7 @@ class game:
 
         #  here we should have a list of turtle objects, turtle_list
 
-    def reward_function(self, turtle):
+    def cost_function(self, turtle):
         positioning = turtle.path
         x_pos_old = -1
         reward = 0
@@ -196,7 +196,7 @@ class game:
     def get_tile_speed(self, turtle):
         pos = (turtle.rect.centerx, turtle.rect.centery)
         x, y = self.which_tile(pos)
-        tile_type = self.map1[x-1][y]
+        tile_type = self.map1[x][y]
         return self.TileSpeed[tile_type]
 
     def create_random_path(self):
@@ -246,7 +246,7 @@ class game:
                 break
             current_tile = (choices[next_ind][0], choices[next_ind][1])
 
-        print("\nCHOSE THIS PATH: ", tile_wise_path)
+        #print("\nCHOSE THIS PATH: ", tile_wise_path)
         return tile_wise_path
 
     def which_tile(self, pos):

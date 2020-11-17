@@ -6,8 +6,11 @@ import pygame, sys
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import copy
 from PIL import Image
 from ypstruct import structure
+from turtle_class import turtle
+
 
 def run(problem, params):
     
@@ -16,6 +19,7 @@ def run(problem, params):
     nvar = problem.nvar
     varmin = problem.varmin
     varmax = problem.varmax
+    turtle_list = problem.turtle_list
 
     # Extracting Parameters
     maxit = params.maxit           
@@ -28,9 +32,7 @@ def run(problem, params):
     sigma = params.sigma
 
     # Empty Individual Template
-    empty_turtle_shell = structure()
-    empty_turtle_shell.position = None
-    empty_turtle_shell.cost = None
+    #empty_turtle_shell = turtle()
 
     # Best Solution found
     best_solution = structure()
@@ -38,11 +40,11 @@ def run(problem, params):
 
 
     # Creating initial population
-    pop = empty_turtle_shell.repeat(npop)
+    pop = turtle_list
 
     for i in range(npop):
-        pop[i].position = np.random.uniform(varmin, varmax, nvar)
-        pop[i].cost = costfunc(pop[i].position)
+        #pop[i].position = np.random.uniform(varmin, varmax, nvar)
+        #pop[i].cost = costfunc(pop[i].position)
         if pop[i].cost < best_solution.cost:
             best_solution.cost = pop[i].cost
 
@@ -50,97 +52,77 @@ def run(problem, params):
     best_cost_over_iterations = np.empty(maxit)     # array of maxit empty spots
 
 
-    # MAIN LOOP
-    for it in range(maxit):
+    costs = np.array([x.cost for x in pop])   # List of costs for every member in population
+    avg_cost = np.mean(costs)
+    if avg_cost != 0:
+        costs = costs/avg_cost
 
-        costs = np.array([x.cost for x in pop])   # List of costs for every member in population
-        avg_cost = np.mean(costs)
-        if avg_cost != 0:
-            costs = costs/avg_cost
-        
-        probs = np.exp(-beta*costs)
+    probs = np.exp(-beta*costs)
 
-        
-        pop_children = []
-        for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
+    pop_children = []
+    i = 0
+    for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
 
-            """# Selecting Parents here
-            q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
-            p1 = pop[q[0]]
-            p2 = pop[q[1]]"""
+        # Selecting Parents here
+        #q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
+        p1 = pop[i]
+        p2 = pop[i+1]
+        i += 2
 
-            # Roulette wheel selection
-            p1 = pop[roulette_wheel_selection(probs)]
-            p2 = pop[roulette_wheel_selection(probs)]
+        # Roulette wheel selection
+        #p1 = pop[roulette_wheel_selection(probs)]
+        #p2 = pop[roulette_wheel_selection(probs)]
 
-            # Perform Crossover
-            c1, c2 = crossover(p1, p2, gamma)
+        # Perform Crossover
+        c1, c2 = crossover(p1, p2, gamma)
 
+        # Add children to population of children
+        pop_children.append(c1)
+        pop_children.append(c2)
 
-            # Perform mutation on offspring
-            c1 = mutate(c1, mu, sigma)
-            c2 = mutate(c2, mu, sigma)
+    # Merge, sort, and select
+    pop += pop_children
+    pop = sorted(pop, key=lambda x: x.cost, reverse=True)   # Sorting population by each element's cost
+    pop = pop[0:npop]                         # We will have the top npop members of the population
 
-            # Apply bounds to the positions
-            c1 = apply_bounds(c1, varmin, varmax)
-            c2 = apply_bounds(c2, varmin, varmax)
+    # Store best cost
+    #best_cost_over_iterations[it] = best_solution.cost
 
-            # Evaluate First Offspring
-            c1.cost = costfunc(c1.position)     # Applying costfunc to determine the child's cost
-            if c1.cost < best_solution.cost:
-                best_solution = c1.deepcopy()
-        
-            # Evaluate Second Offspring
-            c2.cost = costfunc(c2.position)     # Applying costfunc to determine the child's cost
-            if c2.cost < best_solution.cost:
-                best_solution = c2.deepcopy()
+    # Show iteration information
+    #print("Iteration {}: Best cost = {}".format(it, best_cost_over_iterations[it]))
 
-            # Add children to population of children
-            pop_children.append(c1)
-            pop_children.append(c2)
-
-        # Merge, sort, and select
-        pop += pop_children
-        pop = sorted(pop, key=lambda x: x.cost)   # Sorting population by each element's cost
-        pop = pop[0:npop]                         # We will have the top npop members of the population
-
-        # Store best cost
-        best_cost_over_iterations[it] = best_solution.cost
-
-        # Show iteration information
-        print("Iteration {}: Best cost = {}".format(it, best_cost_over_iterations[it]))
-    
 
 
     # Output
-    out = structure()
-    out.pop = pop
-    out.best_solution = best_solution
-    out.best_cost_over_iterations = best_cost_over_iterations
+    #out = structure()
+    #out.pop = pop
+    #out.best_solution = best_solution
+    #out.best_cost_over_iterations = best_cost_over_iterations
 
-    return out
+    return pop
 
 
 def crossover(p1, p2, gamma):
 
-    c1 = p1.deepcopy()
-    c2 = p2.deepcopy()
-    alpha = np.random.uniform(-gamma, 1 + gamma, *c1.position.shape)
+    c1 = p1
+    c2 = p2
+    #alpha = np.random.uniform(-gamma, 1 + gamma, *c1.position.shape)
 
     # Some level of randomization between parents and offspring
-    c1.position = alpha*p1.position + (1-alpha)*p2.position
-    c2.position = alpha*p2.position + (1-alpha)*p1.position
+    #c1.position = alpha*p1.position + (1-alpha)*p2.position
+    #c2.position = alpha*p2.position + (1-alpha)*p1.position
 
 
     return c1, c2
 
 
 def mutate(x, mu, sigma):
-    y = x.deepcopy()
-    flag = (np.random.rand(*x.position.shape) <= mu)    # an array of boolean entities
-    ind = np.argwhere(flag)                             # A list of the indices where it is true
+    y = x
 
-    y.position[ind] += (mu + sigma*np.random.randn(*ind.shape))    # anthony has a picture explaining where this came from
+    #flag = (np.random.rand(*x.position.shape) <= mu)    # an array of boolean entities
+    #ind = np.argwhere(flag)                             # A list of the indices where it is true
+
+    #y.position[ind] += (mu + sigma*np.random.randn(*ind.shape))    # anthony has a picture explaining where this came from
 
     return y
 

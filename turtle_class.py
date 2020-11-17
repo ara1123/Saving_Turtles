@@ -50,7 +50,7 @@ class turtle(object):
     self.dead = False
     self.stopped = False
     self.bridge = False
-    self.reward = 0
+    self.cost = 0
     self.safe = False
 
   def kill(self):
@@ -72,3 +72,5 @@ class turtle(object):
     rot_rect = rot_surf.get_rect(center = (self.rect.centerx, self.rect.centery))
     self.surf = rot_surf
     self.rect = rot_rect
+
+

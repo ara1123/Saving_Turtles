@@ -26,7 +26,7 @@ problem.varmax = 10         # Maximum value of variables
 # GA Parameters
 params = structure()
 params.maxit = 100          # Max iterations
-params.npop = 100           # Max population size (chromosomes)
+params.npop = 20           # Max population size (chromosomes)
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
 params.gamma = 0.1          # Randomization factor between parents and children
 params.mu = 0.1             # The mean for the mutation function, which is a Gaussian distribution
@@ -34,23 +34,30 @@ params.sigma = 0.1          # The std. dev. for the mutation function
 params.beta = 1             # Parent selection variable
 turtle_game = game()
 turtle_game.init_game()
+turtle_game.init_turtles(params)
 
 while True:
-  turtle_game.init_turtles(params)
+
   turtle_game.run_game()
 
   overall_turtle_list = turtle_game.turtle_list + turtle_game.retired_turtles
 
   for turtle in overall_turtle_list:
-    turtle.reward = turtle_game.reward_function(turtle)
-  overall_turtle_list.sort(key=lambda x: x.reward, reverse=True)      # A sorted list of turtles by reward
+    turtle.cost = turtle_game.cost_function(turtle)
+  overall_turtle_list.sort(key=lambda x: x.cost, reverse=True)      # A sorted list of turtles by reward
 
-  overall_turtle_list = overall_turtle_list[:npop//2]                 # Getting rid of the worst 50% of parents
+  problem.turtle_list = overall_turtle_list               # Getting rid of the worst 50% of parents
 
   # Run GA
   out = ga.run(problem, params)
 
+
   turtle_game.reset()
+  turtle_game.init_turtles(params)
+  i = 0
+  for t in out:
+    turtle_game.turtle_list[i].path = t.path
+    i += 1
 
 """# Results
 plt.plot(out.bestcost)
