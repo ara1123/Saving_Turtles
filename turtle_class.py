@@ -41,11 +41,11 @@ animations = {0 : pygame.transform.rotozoom(surface, -90, 1),
               }
 
 class turtle(object):
-
   def __init__(self, turtle_params):
     self.surf = animations[0]
     self.rect = self.surf.get_rect(center = turtle_params.start)
     self.path = turtle_params.path
+    self.gene = turtle_params.gene
     self.iteration = 0
     self.effort = 0
     self.dead = False

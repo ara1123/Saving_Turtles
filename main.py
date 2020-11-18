@@ -13,7 +13,6 @@ from bridge_class import bridge
 
 # Problem Definition
 problem = structure()
-problem.costfunc = sphere
 problem.nvar = 5            # Number of variables (genes)
 problem.varmin = -10        # Minimum value of variables
 problem.varmax = 10         # Maximum value of variables

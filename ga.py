@@ -38,21 +38,16 @@ def run(problem, params):
     best_solution = structure()
     best_solution.cost = np.inf               # This is the default value, which should be the worst case scenario
 
-
-    # Creating initial population
     pop = turtle_list
 
-    for turtle in turtle_list:
-        #pop[i].position = np.random.uniform(varmin, varmax, nvar)
-        #pop[i].cost = costfunc(pop[i].position)
+    for turtle in pop:
         if turtle.cost < best_solution.cost:
             best_solution.cost = turtle.cost
 
     # Best cost of Iterations
     best_cost_over_iterations = np.empty(maxit)     # array of maxit empty spots
 
-
-    costs = np.array([turtle.cost for turtle in turtle_list])   # List of costs for every member in population
+    costs = np.array([turtle.cost for turtle in pop])   # List of costs for every member in population
     avg_cost = np.mean(costs)
     if avg_cost != 0:
         costs = costs/avg_cost
@@ -61,7 +56,7 @@ def run(problem, params):
     i = 0
     for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
         # Selecting Parents here
-        #q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
+        q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
         p1 = pop[i]
         p2 = pop[i+1]
         i += 2
@@ -103,11 +98,11 @@ def crossover(p1, p2, gamma):
 
     c1 = p1
     c2 = p2
-    #alpha = np.random.uniform(-gamma, 1 + gamma, *c1.position.shape)
+    alpha = np.random.uniform(-gamma, 1 + gamma, *c1.gene.shape)
 
-    # Some level of randomization between parents and offspring
-    #c1.position = alpha*p1.position + (1-alpha)*p2.position
-    #c2.position = alpha*p2.position + (1-alpha)*p1.position
+    Some level of randomization between parents and offspring
+    c1.gene = alpha*p1.gene + (1-alpha)*p2.gene
+    c2.gene = alpha*p2.gene + (1-alpha)*p1.gene
 
 
     return c1, c2
@@ -116,17 +111,17 @@ def crossover(p1, p2, gamma):
 def mutate(x, mu, sigma):
     y = x
 
-    #flag = (np.random.rand(*x.position.shape) <= mu)    # an array of boolean entities
-    #ind = np.argwhere(flag)                             # A list of the indices where it is true
+    flag = (np.random.rand(*x.gene.shape) <= mu)    # an array of boolean entities
+    ind = np.argwhere(flag)                             # A list of the indices where it is true
 
-    #y.position[ind] += (mu + sigma*np.random.randn(*ind.shape))    # anthony has a picture explaining where this came from
+    y.gene[ind] += (mu + sigma*np.random.randn(*ind.shape))    # anthony has a picture explaining where this came from
 
     return y
 
 
 def apply_bounds(x, varmin, varmax):
-    x.position = np.maximum(x.position, varmin)         # The result of this will always be >= varmin
-    x.position = np.minimum(x.position, varmax)         # The result of this will always be <= varmax
+    x.gene = np.maximum(x.gene, varmin)         # The result of this will always be >= varmin
+    x.gene = np.minimum(x.gene, varmax)         # The result of this will always be <= varmax
 
     return x
 
