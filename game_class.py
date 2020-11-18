@@ -139,7 +139,6 @@ class game:
             t_obj = turtle(turt_params)
             self.turtle_list.append(t_obj)
 
-        #  here we should have a list of turtle objects, turtle_list
 
     def cost_function(self, turtle):
         positioning = turtle.path
@@ -148,17 +147,22 @@ class game:
 
         for coord in positioning:
             if coord[0] > x_pos_old:
-                reward += 5
-            if coord[0] < x_pos_old:
-                reward -= 8
-            if turtle.bridge:
-                reward += 50
-            if turtle.dead:
-                reward -= 1000
-            if turtle.stopped:
-                reward -= 30
+                reward += 10
+            elif coord[0] == x_pos_old:
+                reward += 2
+            elif coord[0] < x_pos_old:
+                reward -= 5
+
             x_pos_old = coord[0]
 
+        if turtle.bridge:
+            reward += 300
+        if turtle.dead:
+            reward -= 100
+        if turtle.stopped:
+            reward -= 15
+        if len(positioning) < 2:
+            reward -= 200
         return reward
 
 
