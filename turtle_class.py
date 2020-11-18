@@ -25,7 +25,8 @@ turt_list = [turtle_img_01, turtle_img_02, turtle_img_03, turtle_img_04, turtle_
                      turtle_img_06, turtle_img_07, turtle_img_08, turtle_img_09, turtle_img_10,
                      turtle_img_11, turtle_img_12, turtle_img_13, turtle_img_14]
 
-img = random.choice(turt_list)
+choice = random.randrange(len(turt_list))
+img = turt_list[choice]
 img = img.resize((30, 30)) # This should be tilesize
 surface = pygame.image.fromstring(img.tobytes(), img.size, img.mode)
 animations = {0 : pygame.transform.rotozoom(surface, -90, 1),
@@ -50,7 +51,7 @@ class turtle(object):
     self.dead = False
     self.stopped = False
     self.bridge = False
-    self.cost = 0
+    self.reward = 0
     self.safe = False
 
   def kill(self):

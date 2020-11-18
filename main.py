@@ -5,14 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from ypstruct import structure
-import my_GA as ga
+import ga
 from game_class import game
 from turtle_class import turtle
 from bridge_class import bridge
-
-# Sphere Cost Function
-def sphere(x):
-    return sum(x**2)
 
 
 # Problem Definition
@@ -40,24 +36,28 @@ while True:
 
   turtle_game.run_game()
 
-  overall_turtle_list = turtle_game.turtle_list + turtle_game.retired_turtles
+  # This stuff should be done inside the GA
+  # overall_turtle_list = turtle_game.turtle_list + turtle_game.retired_turtles
 
-  for turtle in overall_turtle_list:
-    turtle.cost = turtle_game.cost_function(turtle)
-  overall_turtle_list.sort(key=lambda x: x.cost, reverse=True)      # A sorted list of turtles by reward
+  # for turtle in overall_turtle_list:
+  #   turtle.cost = turtle_game.cost_function(turtle)
+  # overall_turtle_list.sort(key=lambda x: x.cost, reverse=True)      # A sorted list of turtles by reward
 
-  problem.turtle_list = overall_turtle_list               # Getting rid of the worst 50% of parents
+  # problem.turtle_list = overall_turtle_list               # Getting rid of the worst 50% of parents
 
   # Run GA
-  out = ga.run(problem, params)
-
+  problem.turtle_list = game.retired_turtles
+  game.retired_turtles.clear()
+  turtle_list = ga.run(problem, params)
+  turtle_game.turtle_list = turtle_list
 
   turtle_game.reset()
   turtle_game.init_turtles(params)
-  i = 0
-  for t in out:
-    turtle_game.turtle_list[i].path = t.path
-    i += 1
+
+  # i = 0
+  # for t in out:
+  #   turtle_game.turtle_list[i].path = t.path
+  #   i += 1
 
 """# Results
 plt.plot(out.bestcost)

@@ -13,7 +13,7 @@ from turtle_class import turtle
 
 
 def run(problem, params):
-    
+
     # Extracting Problem information
     costfunc = problem.costfunc
     nvar = problem.nvar
@@ -22,7 +22,7 @@ def run(problem, params):
     turtle_list = problem.turtle_list
 
     # Extracting Parameters
-    maxit = params.maxit           
+    maxit = params.maxit
     npop = params.npop
     beta = params.beta
     pc = params.pc
@@ -42,27 +42,24 @@ def run(problem, params):
     # Creating initial population
     pop = turtle_list
 
-    for i in range(npop):
+    for turtle in turtle_list:
         #pop[i].position = np.random.uniform(varmin, varmax, nvar)
         #pop[i].cost = costfunc(pop[i].position)
-        if pop[i].cost < best_solution.cost:
-            best_solution.cost = pop[i].cost
+        if turtle.cost < best_solution.cost:
+            best_solution.cost = turtle.cost
 
     # Best cost of Iterations
     best_cost_over_iterations = np.empty(maxit)     # array of maxit empty spots
 
 
-    costs = np.array([x.cost for x in pop])   # List of costs for every member in population
+    costs = np.array([turtle.cost for turtle in turtle_list])   # List of costs for every member in population
     avg_cost = np.mean(costs)
     if avg_cost != 0:
         costs = costs/avg_cost
 
-    probs = np.exp(-beta*costs)
-
     pop_children = []
     i = 0
     for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
-
         # Selecting Parents here
         #q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
         p1 = pop[i]
@@ -130,7 +127,7 @@ def mutate(x, mu, sigma):
 def apply_bounds(x, varmin, varmax):
     x.position = np.maximum(x.position, varmin)         # The result of this will always be >= varmin
     x.position = np.minimum(x.position, varmax)         # The result of this will always be <= varmax
-    
+
     return x
 
 def roulette_wheel_selection(p):

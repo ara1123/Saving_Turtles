@@ -140,32 +140,30 @@ class game:
             self.turtle_list.append(t_obj)
 
 
-    def cost_function(self, turtle):
-        positioning = turtle.path
-        x_pos_old = -1
-        reward = 0
+    def calc_cost(self, turtle):
+        cost = 0
 
-        for coord in positioning:
-            if coord[0] > x_pos_old:
-                reward += 10
-            elif coord[0] == x_pos_old:
-                reward += 2
-            elif coord[0] < x_pos_old:
-                reward -= 5
+        # for coord in positioning:
+        #     if coord[0] > x_pos_old:
+        #         reward += 10
+        #     elif coord[0] == x_pos_old:
+        #         reward += 2
+        #     elif coord[0] < x_pos_old:
+        #         reward -= 5
 
-            x_pos_old = coord[0]
+        #     x_pos_old = coord[0]
+
+        # Simpler to do it this way? With pixels instead of tiles
+        cost -= 0.1*turtle.rect.centerx
+        cost += 0.05*turtle.effort
 
         if turtle.bridge:
-            reward += 300
+            cost -= 300
         if turtle.dead:
-            reward -= 100
+            cost += 100
         if turtle.stopped:
-            reward -= 15
-        if len(positioning) < 2:
-            reward -= 200
-        return reward
-
-
+            cost += 15
+        return cost
 
     # Assumes a road of width 2 that vertically bisects the map in a straight line
     def spawn_car(self):
@@ -320,9 +318,8 @@ class game:
                 redx.rect = redx.surf.get_rect(center=pos)
                 self.redx_list.append(redx)
 
-                # Slice the path to the actual end
-                end = turtle.iteration
-                turtle.path = turtle.path[:end]
+                # Calculate the cost of the turtle
+                turtle.cost = self.calc_cost(turtle)
 
                 # Add to retired turtles list
                 self.retired_turtles.append(turtle)
@@ -391,7 +388,7 @@ class game:
 
         """ MAIN LOOP """
         while True:
-            if not self.turtle_list:
+            if not self.turtle_list: # This ends the round
                 return
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
