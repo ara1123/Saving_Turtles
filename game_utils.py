@@ -24,6 +24,15 @@ def load_half_tilesz(path_to_image, tilesize):
   surface.convert()
   return surface
 
+N = 0
+NE = 1
+E = 2
+SE = 3
+S = 4
+SW = 5
+W = 6
+NW = 7
+
 def coords_to_cardinal(path):
   last_coord = path[0]
   card = []
@@ -36,21 +45,21 @@ def coords_to_cardinal(path):
     movex = x - lx
 
     if movey > 0 and movex == 0:
-      card.append('N')
+      card.append(N)
     elif movey > 0 and movex > 0:
-      card.append('NE')
+      card.append(NE)
     elif movey == 0 and movex > 0:
-      card.append('E')
+      card.append(E)
     elif movey < 0 and movex > 0:
-      card.append('SE'):
+      card.append(SE)
     elif movey < 0 and movex == 0:
-      card.append('S')
+      card.append(S)
     elif movey < 0 and movex < 0:
-      card.append('SW')
+      card.append(SW)
     elif movey == 0 and movex < 0:
-      card.append('W')
+      card.append(W)
     elif movey > 0 and movex < 0:
-      card.append('NW')
+      card.append(NW)
 
   return card
 
@@ -59,24 +68,24 @@ def card_to_coords(start, card):
   x = start[0]
   y = start[1]
   for move in card:
-    if move == 'N':
+    if move == N:
       y += 1
-    elif move == 'NE':
+    elif move == NE:
       y += 1
       x += 1
-    elif move == 'E':
+    elif move == E:
       x += 1
-    elif move == 'SE':
+    elif move == SE:
       y -= 1
       x += 1
-    elif move == 'S':
+    elif move == S:
       y -= 1
-    elif move == 'SW':
+    elif move == SW:
       y -= 1
       x -= 1
-    elif move == 'W':
+    elif move == W:
       x -= 1
-    elif move == 'NW':
+    elif move == NW:
       y += 1
       x -= 1
     path.append((x,y))

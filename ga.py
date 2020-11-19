@@ -10,6 +10,7 @@ import copy
 from PIL import Image
 from ypstruct import structure
 from turtle_class import turtle
+import pygame
 
 
 def run(problem, params):
@@ -30,19 +31,21 @@ def run(problem, params):
     gamma = params.gamma
     mu = params.mu
     sigma = params.sigma
+    it = params.it
 
     # Empty Individual Template
     #empty_turtle_shell = turtle()
 
     # Best Solution found
     best_solution = structure()
+    best_solution.path = []
     best_solution.cost = np.inf               # This is the default value, which should be the worst case scenario
 
     pop = turtle_list
-
+    print("THERE ARE {} TURTLES IN POP".format(len(pop)))
     for turtle in pop:
         if turtle.cost < best_solution.cost:
-            best_solution.cost = turtle.cost
+            best_solution.path = turtle.path.copy()
 
     # Best cost of Iterations
     best_cost_over_iterations = np.empty(maxit)     # array of maxit empty spots
@@ -54,23 +57,23 @@ def run(problem, params):
 
     pop_children = []
     i = 0
-    for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
-        # Selecting Parents here
-        q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
-        p1 = pop[i]
-        p2 = pop[i+1]
-        i += 2
+    # for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
+    #     # Selecting Parents here
+    #     q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
+    #     p1 = pop[i]
+    #     p2 = pop[i+1]
+    #     i += 2
 
-        # Roulette wheel selection
-        #p1 = pop[roulette_wheel_selection(probs)]
-        #p2 = pop[roulette_wheel_selection(probs)]
+    #     # Roulette wheel selection
+    #     #p1 = pop[roulette_wheel_selection(probs)]
+    #     #p2 = pop[roulette_wheel_selection(probs)]
 
-        # Perform Crossover
-        c1, c2 = crossover(p1, p2, gamma)
+    #     # Perform Crossover
+    #     c1, c2 = crossover(p1, p2, gamma)
 
-        # Add children to population of children
-        pop_children.append(c1)
-        pop_children.append(c2)
+    #     # Add children to population of children
+    #     pop_children.append(c1)
+    #     pop_children.append(c2)
 
     # Merge, sort, and select
     pop += pop_children
@@ -78,34 +81,20 @@ def run(problem, params):
     pop = pop[0:npop]                         # We will have the top npop members of the population
 
     # Store best cost
-    #best_cost_over_iterations[it] = best_solution.cost
-
-    # Show iteration information
-    #print("Iteration {}: Best cost = {}".format(it, best_cost_over_iterations[it]))
-
-
+    best_cost = best_solution.cost
 
     # Output
-    #out = structure()
-    #out.pop = pop
-    #out.best_solution = best_solution
-    #out.best_cost_over_iterations = best_cost_over_iterations
+    out = structure()
+    out.pop = pop
+    out.best_solution = best_solution
+    out.best_cost = best_cost
 
-    return pop
+    return out
 
 
 def crossover(p1, p2, gamma):
 
-    c1 = p1
-    c2 = p2
-    alpha = np.random.uniform(-gamma, 1 + gamma, *c1.gene.shape)
-
-    Some level of randomization between parents and offspring
-    c1.gene = alpha*p1.gene + (1-alpha)*p2.gene
-    c2.gene = alpha*p2.gene + (1-alpha)*p1.gene
-
-
-    return c1, c2
+    return p1, p2
 
 
 def mutate(x, mu, sigma):

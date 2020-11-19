@@ -14,8 +14,8 @@ from bridge_class import bridge
 # Problem Definition
 problem = structure()
 problem.nvar = 5            # Number of variables (genes)
-problem.varmin = -10        # Minimum value of variables
-problem.varmax = 10         # Maximum value of variables
+problem.varmin = 0        # Minimum value of variables
+problem.varmax = 7         # Maximum value of variables
 
 
 # GA Parameters
@@ -27,9 +27,14 @@ params.gamma = 0.1          # Randomization factor between parents and children
 params.mu = 0.1             # The mean for the mutation function, which is a Gaussian distribution
 params.sigma = 0.1          # The std. dev. for the mutation function
 params.beta = 1             # Parent selection variable
+params.it = 0
 turtle_game = game()
 turtle_game.init_game()
 turtle_game.init_turtles(params)
+
+# Data from genetic algorithm
+best_costs_over_it = []
+best_turtles_from_each_it = []
 
 while True:
 
@@ -45,26 +50,14 @@ while True:
   # problem.turtle_list = overall_turtle_list               # Getting rid of the worst 50% of parents
 
   # Run GA
-  problem.turtle_list = game.retired_turtles
-  game.retired_turtles.clear()
-  turtle_list = ga.run(problem, params)
-  turtle_game.turtle_list = turtle_list
+  problem.turtle_list = turtle_game.retired_turtles.copy()
+  print("THERE ARE {} RETIRED TURTLES".format(len(problem.turtle_list)))
+  turtle_game.retired_turtles.clear()
+  out = ga.run(problem, params)
+  turtle_game.set_turtle_list(out.pop)
+  best_costs_over_it.append(out.best)
+  best_turtles_from_each_it.append(out.best_solution)
 
   turtle_game.reset()
-  turtle_game.init_turtles(params)
 
-  # i = 0
-  # for t in out:
-  #   turtle_game.turtle_list[i].path = t.path
-  #   i += 1
 
-"""# Results
-plt.plot(out.bestcost)
-#plt.semilogy(out.bestcost)      # Using a logarithmic scale for y axis, to better see improvement
-plt.xlim(0, params.maxit)
-plt.ylabel('Best Cost')
-plt.xlabel('Iterations')
-plt.title('Genetic Algorithm')
-plt.grid(True)
-plt.show()
-"""

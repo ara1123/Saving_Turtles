@@ -94,6 +94,7 @@ class game:
     # Map
     width = len(map1[0])
     height = len(map1)
+    print("MAP1 is {} long and {} high".format(width, height))
     start = (50, (height * tilesize) // 2)
     end = (width * tilesize, (height * tilesize) // 2)
     game_active = True
@@ -136,6 +137,7 @@ class game:
         turt_params.start = self.start
         for n in range(num_turtles):
             turt_params.path = self.create_random_path()
+            turt_params.gene = gu.coords_to_cardinal(turt_params.path)
             t_obj = turtle(turt_params)
             self.turtle_list.append(t_obj)
 
@@ -376,6 +378,11 @@ class game:
     def set_turtle_list(self, turtles):
         self.turtle_list = turtles
 
+    def reset_turtles(self):
+      for turtle in self.turtle_list:
+        turtle.reset()
+        turtle.rect.center = self.start
+
     def run_game(self):
         def display_map():
             """ DRAW MAP TO SCREEN """
@@ -411,3 +418,6 @@ class game:
     def reset(self):
         self.redx_list.clear()
         self.car_list.clear()
+        for turtle in self.turtle_list:
+          turtle.reset()
+          turtle.rect.center = self.start
