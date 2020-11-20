@@ -21,7 +21,7 @@ problem.varmax = 7         # Maximum value of variables
 # GA Parameters
 params = structure()
 params.maxit = 100          # Max iterations
-params.npop = 1           # Max population size (chromosomes)
+params.npop = 20           # Max population size (chromosomes)
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
 params.gamma = 0.1          # Randomization factor between parents and children
 params.mu = 0.1             # The mean for the mutation function, which is a Gaussian distribution
@@ -36,28 +36,37 @@ turtle_game.init_turtles(params)
 best_costs_over_it = []
 best_turtles_from_each_it = []
 
+# Run game with initial, random population
+turtle_game.run_game()
+main_pop = turtle_game.retired_turtles.copy()
+turtle_game.reset()
+
 while True:
 
-  turtle_game.run_game()
+  # Store turtle list in data structure for ga
+  problem.turtle_list = main_pop.copy()
 
-  # This stuff should be done inside the GA
-  # overall_turtle_list = turtle_game.turtle_list + turtle_game.retired_turtles
-
-  # for turtle in overall_turtle_list:
-  #   turtle.cost = turtle_game.cost_function(turtle)
-  # overall_turtle_list.sort(key=lambda x: x.cost, reverse=True)      # A sorted list of turtles by reward
-
-  # problem.turtle_list = overall_turtle_list               # Getting rid of the worst 50% of parents
-
-  # Run GA
-  problem.turtle_list = turtle_game.retired_turtles.copy()
-  print("THERE ARE {} RETIRED TURTLES".format(len(problem.turtle_list)))
+  # print("THERE ARE {} RETIRED TURTLES".format(len(problem.turtle_list)))
+  # Fully reset the game by clearing out the previous population
   turtle_game.retired_turtles.clear()
-  out = ga.run(problem, params)
-  turtle_game.set_turtle_list(out.pop)
-  best_costs_over_it.append(out.best)
-  best_turtles_from_each_it.append(out.best_solution)
 
+  # Get children
+  c_gene_pool = ga.breed_turtles(problem, params)
+
+  turtle_game.init_children(c_gene_pool, params)
+
+  # Calculate cost for new population
+  turtle_game.run_game()
   turtle_game.reset()
+
+  # Merge, sort, and select to get new population
+  popc = turtle_game.retired_turtles.copy()
+  turtle_game.retired_turtles.clear()
+  main_pop = ga.sort_select(main_pop, popc)
+
+  # Implement these later
+  # best_costs_over_it.append(out.best)
+
+  # best_turtles_from_each_it.append(out.best_solution)
 
 

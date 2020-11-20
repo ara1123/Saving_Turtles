@@ -49,13 +49,13 @@ class game:
                    X: IMPASSE}
 
     """DEFINE MAP"""
-    map1 = np.array([[F, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+    map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, G, G, G, G, G, R, R, G, G, X, G, G, G, W],
                    [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
                    [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
                    [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, F, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, M, F, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
                    [G, G, F, G, G, X, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, G, G, G, G, R, R, G, G, F, F, G, G, W],
@@ -141,6 +141,16 @@ class game:
             t_obj = turtle(turt_params)
             self.turtle_list.append(t_obj)
 
+    def init_children(self, gene_list, params):
+        num_turtles = params.npop
+        turt_params = structure()
+        turt_params.tilesize = self.tilesize
+        turt_params.start = self.start
+        for gene in gene_list:
+          turt_params.gene = gene
+          turt_params.path = gu.card_to_coords(self.start, gene)
+          t_obj = turtle(turt_params)
+          self.turtle_list.append(t_obj)
 
     def calc_cost(self, turtle):
         cost = 0
@@ -200,7 +210,11 @@ class game:
     def get_tile_speed(self, turtle):
         pos = (turtle.rect.centerx, turtle.rect.centery)
         x, y = self.which_tile(pos)
-        tile_type = self.map1[y,x]
+        y = self.height - y
+        if x > self.width or y > self.height:
+          turtle.stop()
+          return 0
+        tile_type = self.map1[y-1,x-1]
         print("On tile {} {} which is a tile of type {}".format(x,y,tile_type))
         return self.TileSpeed[tile_type]
 

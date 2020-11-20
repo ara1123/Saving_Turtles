@@ -2,6 +2,10 @@
 
 # This is the genetic algorithm
 
+# This genetic algorithm code is based off an example by Yarpiz
+# https://www.youtube.com/watch?v=PhJgktRB1AM
+# Thanks Yarpiz!
+
 import pygame, sys
 import random
 import numpy as np
@@ -15,6 +19,26 @@ import pygame
 
 def run(problem, params):
 
+
+
+    # Merge, sort, and select
+    pop += pop_children
+    pop = sorted(pop, key=lambda x: x.cost, reverse=True)   # Sorting population by each element's cost
+    pop = pop[0:npop]                         # We will have the top npop members of the population
+
+    # Store best cost
+    best_cost = best_solution.cost
+
+    # Output
+    out = structure()
+    out.pop = pop
+    out.best_solution = best_solution
+    out.best_cost = best_cost
+
+    return out
+
+# Create children,
+def breed_turtles(problem, params):
     # Extracting Problem information
     costfunc = problem.costfunc
     nvar = problem.nvar
@@ -33,9 +57,6 @@ def run(problem, params):
     sigma = params.sigma
     it = params.it
 
-    # Empty Individual Template
-    #empty_turtle_shell = turtle()
-
     # Best Solution found
     best_solution = structure()
     best_solution.path = []
@@ -45,7 +66,7 @@ def run(problem, params):
     print("THERE ARE {} TURTLES IN POP".format(len(pop)))
     for turtle in pop:
         if turtle.cost < best_solution.cost:
-            best_solution.path = turtle.path.copy()
+            best_solution.gene = turtle.gene.copy()
 
     # Best cost of Iterations
     best_cost_over_iterations = np.empty(maxit)     # array of maxit empty spots
@@ -55,57 +76,51 @@ def run(problem, params):
     if avg_cost != 0:
         costs = costs/avg_cost
 
-    pop_children = []
-    i = 0
-    # for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
-    #     # Selecting Parents here
-    #     q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
-    #     p1 = pop[i]
-    #     p2 = pop[i+1]
-    #     i += 2
+    c_gene_pool = []
 
-    #     # Roulette wheel selection
-    #     #p1 = pop[roulette_wheel_selection(probs)]
-    #     #p2 = pop[roulette_wheel_selection(probs)]
+    for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
+        # Selecting Parents here
+        q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
+        p1_gene = pop[q[0]].gene.copy()
+        p2_gene = pop[q[1]].gene.copy()
 
-    #     # Perform Crossover
-    #     c1, c2 = crossover(p1, p2, gamma)
+        # Perform Crossover
+        c1, c2 = crossover(p1_gene, p2_gene, gamma)
 
-    #     # Add children to population of children
-    #     pop_children.append(c1)
-    #     pop_children.append(c2)
+        c1 = mutate(c1, mu, sigma)
+        c2 = mutate(c2, mu, sigma)
 
-    # Merge, sort, and select
-    pop += pop_children
-    pop = sorted(pop, key=lambda x: x.cost, reverse=True)   # Sorting population by each element's cost
-    pop = pop[0:npop]                         # We will have the top npop members of the population
+        # Add children to population of children
+        children_gene_pool.append(c1)
+        children_gene_pool.append(c2)
 
-    # Store best cost
-    best_cost = best_solution.cost
+    return c_gene_pool
 
-    # Output
-    out = structure()
-    out.pop = pop
-    out.best_solution = best_solution
-    out.best_cost = best_cost
+def sort_select(pop, popc):
+    npop = len(o)
+    pop += popc
+    pop = sorted(pop, key=lambda x: x.cost)
+    pop = pop[0:npop]
+    return pop
 
-    return out
-
-
+#Anthony, this will need to be different. His method doesn't work or apply here I'm pretty sure.
 def crossover(p1, p2, gamma):
-
-    return p1, p2
+    c1 = np.array(p1)
+    c2 = np.array(p2)
+    print("Gene of child 1", c1)
+    alpha = np.random.uniform(-gamma, 1+gamma, c1.shape()) # * converts the tuple to a list of distinct values/arguments
+    c1 = alpha*p1 + (1-alpha)*p2
+    c2 = alpha*p2 + (1-alpha)*p1
+    return c1.to_list(), c2.to_list()
 
 
 def mutate(x, mu, sigma):
-    y = x
-
+    y = np.array(x)
     flag = (np.random.rand(*x.gene.shape) <= mu)    # an array of boolean entities
     ind = np.argwhere(flag)                             # A list of the indices where it is true
-
     y.gene[ind] += (mu + sigma*np.random.randn(*ind.shape))    # anthony has a picture explaining where this came from
 
-    return y
+    return y.to_list()
 
 
 def apply_bounds(x, varmin, varmax):
