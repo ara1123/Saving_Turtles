@@ -200,7 +200,7 @@ class game:
     def get_tile_speed(self, turtle):
         pos = (turtle.rect.centerx, turtle.rect.centery)
         x, y = self.which_tile(pos)
-        tile_type = self.map1[x - 1][y - 1]
+        tile_type = self.map1[y,x]
         print("On tile {} {} which is a tile of type {}".format(x,y,tile_type))
         return self.TileSpeed[tile_type]
 
