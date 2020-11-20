@@ -48,7 +48,7 @@ class game:
                    M: MUD,
                    X: IMPASSE}
 
-    """DEFINE MAP
+    """DEFINE MAP"""
     map1 = np.array([[F, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, G, G, G, G, G, R, R, G, G, X, G, G, G, W],
@@ -60,20 +60,20 @@ class game:
                    [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, G, G, G, G, R, R, G, G, F, F, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])"""
+                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
 
-    map1 = np.array([random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17),
-                     random.choices(Tiles, k=17)])
+    # map1 = np.array([random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17),
+    #                  random.choices(Tiles, k=17)])
 
     # Creating the road and left water edge in the randomized map
     for i in range(12):
@@ -95,7 +95,7 @@ class game:
     width = len(map1[0])
     height = len(map1)
     print("MAP1 is {} long and {} high".format(width, height))
-    start = (50, (height * tilesize) // 2)
+    start = (tilesize // 2, (height * tilesize) // 2 - tilesize // 2)
     end = (width * tilesize, (height * tilesize) // 2)
     game_active = True
     wall_list = []
@@ -201,6 +201,7 @@ class game:
         pos = (turtle.rect.centerx, turtle.rect.centery)
         x, y = self.which_tile(pos)
         tile_type = self.map1[x - 1][y - 1]
+        print("On tile {} {} which is a tile of type {}".format(x,y,tile_type))
         return self.TileSpeed[tile_type]
 
     def create_random_path(self):
@@ -267,6 +268,8 @@ class game:
             posx = turtle.rect.centerx  # Pixel
             posy = turtle.rect.centery
             current_tile = self.which_tile((posx, posy))
+
+            # Check if turtle has reached goal
             if path_ind >= len(turtle.path) - 1:
                 self.screen.blit(turtle.surf, turtle.rect)
                 continue
