@@ -5,22 +5,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from ypstruct import structure
-import my_GA as ga
+import ga
 from game_class import game
 from turtle_class import turtle
 from bridge_class import bridge
 
-# Sphere Cost Function
-def sphere(x):
-    return sum(x**2)
-
 
 # Problem Definition
 problem = structure()
-problem.costfunc = sphere
 problem.nvar = 5            # Number of variables (genes)
-problem.varmin = -10        # Minimum value of variables
-problem.varmax = 10         # Maximum value of variables
+problem.varmin = 0        # Minimum value of variables
+problem.varmax = 7         # Maximum value of variables
 
 
 # GA Parameters
@@ -32,40 +27,46 @@ params.gamma = 0.1          # Randomization factor between parents and children
 params.mu = 0.1             # The mean for the mutation function, which is a Gaussian distribution
 params.sigma = 0.1          # The std. dev. for the mutation function
 params.beta = 1             # Parent selection variable
+params.it = 0
 turtle_game = game()
 turtle_game.init_game()
 turtle_game.init_turtles(params)
 
+# Data from genetic algorithm
+best_costs_over_it = []
+best_turtles_from_each_it = []
+
+# Run game with initial, random population
+turtle_game.run_game()
+main_pop = turtle_game.retired_turtles.copy()
+turtle_game.reset()
+
 while True:
 
+  # Store turtle list in data structure for ga
+  problem.turtle_list = main_pop.copy()
+
+  # print("THERE ARE {} RETIRED TURTLES".format(len(problem.turtle_list)))
+  # Fully reset the game by clearing out the previous population
+  turtle_game.retired_turtles.clear()
+
+  # Get children
+  c_gene_pool = ga.breed_turtles(problem, params)
+
+  turtle_game.init_children(c_gene_pool, params)
+
+  # Calculate cost for new population
   turtle_game.run_game()
-
-  overall_turtle_list = turtle_game.turtle_list + turtle_game.retired_turtles
-
-  for turtle in overall_turtle_list:
-    turtle.cost = turtle_game.cost_function(turtle)
-  overall_turtle_list.sort(key=lambda x: x.cost, reverse=True)      # A sorted list of turtles by reward
-
-  problem.turtle_list = overall_turtle_list               # Getting rid of the worst 50% of parents
-
-  # Run GA
-  out = ga.run(problem, params)
-
-
   turtle_game.reset()
-  turtle_game.init_turtles(params)
-  i = 0
-  for t in out:
-    turtle_game.turtle_list[i].path = t.path
-    i += 1
 
-"""# Results
-plt.plot(out.bestcost)
-#plt.semilogy(out.bestcost)      # Using a logarithmic scale for y axis, to better see improvement
-plt.xlim(0, params.maxit)
-plt.ylabel('Best Cost')
-plt.xlabel('Iterations')
-plt.title('Genetic Algorithm')
-plt.grid(True)
-plt.show()
-"""
+  # Merge, sort, and select to get new population
+  popc = turtle_game.retired_turtles.copy()
+  turtle_game.retired_turtles.clear()
+  main_pop = ga.sort_select(main_pop, popc)
+
+  # Implement these later
+  # best_costs_over_it.append(out.best)
+
+  # best_turtles_from_each_it.append(out.best_solution)
+
+
