@@ -41,6 +41,7 @@ def coords_to_cardinal(path):
       continue
     x, y = coord
     lx, ly = last_coord
+    last_coord = coord
     movey = y - ly
     movex = x - lx
 

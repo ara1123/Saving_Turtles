@@ -93,7 +93,7 @@ def breed_turtles(problem, params):
 
 
 def sort_select(pop, popc):
-    npop = len(0)
+    npop = len(pop)
     pop += popc
     pop = sorted(pop, key=lambda x: x.cost)
     pop = pop[0:npop]
@@ -114,7 +114,7 @@ def crossover(p1, p2, mu):
 def mutate(x, mu):
     m_gene = x
     # We may want to remove west/southwest from the lineup, so the little bastards cant backtrack
-    directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+    directions = [0, 1, 2, 3, 4, 5, 6, 7]
 
     for index in range(0, len(m_gene), mu):
         m_gene[index] = random.choice(directions)
