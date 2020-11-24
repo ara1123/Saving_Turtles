@@ -138,7 +138,7 @@ class game:
         for n in range(num_turtles):
             turt_params.path = self.create_random_path()
             turt_params.gene = gu.coords_to_cardinal(turt_params.path)
-            print("Turned this path \n {} \n into this gene \n {} \n\n".format(turt_params.path, turt_params.gene))
+            #print("Turned this path \n {} \n into this gene \n {} \n\n".format(turt_params.path, turt_params.gene))
             t_obj = turtle(turt_params)
             self.turtle_list.append(t_obj)
 
@@ -177,6 +177,8 @@ class game:
             cost += 50
         if turtle.stopped:
             cost += 50
+        if turtle.safe and turtle.bridge:
+            cost -= 1000
         return cost
 
     # Assumes a road of width 2 that vertically bisects the map in a straight line
@@ -217,7 +219,7 @@ class game:
           turtle.stop()
           return 0
         tile_type = self.map1[y-1,x-1]
-        # print("On tile {} {} which is a tile of type {}".format(x,y,tile_type))
+        #print("On tile {} {} which is a tile of type {}".format(x,y,tile_type))
         return self.TileSpeed[tile_type]
 
     def create_random_path(self):
@@ -370,9 +372,11 @@ class game:
         for turtle in self.turtle_list:
             if not self.in_map(turtle):
                 turtle.stop()
+                if turtle.rect.centerx == 1024:
+                    turtle.safe = True
             for wall in self.wall_list:
                 if turtle.rect.colliderect(wall):
-                    # print("HIT WALL")
+                    #print("HIT WALL")
                     turtle.stop()
             for car in self.car_list:
                 if turtle.rect.colliderect(car):
@@ -381,6 +385,7 @@ class game:
                         continue
                     # print("HIT CAR")
                     turtle.kill()
+
 
     def display_bridge(self):
         self.screen.blit(self.brg.surf, self.brg.rect)
