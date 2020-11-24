@@ -170,13 +170,14 @@ class game:
         """# Simpler to do it this way? With pixels instead of tiles
         cost -= 0.1*turtle.rect.centerx
         cost += 0.05*turtle.effort"""
+        cost += 0.5 * turtle.effort
 
         if turtle.bridge:
             cost -= 300
         if turtle.dead:
             cost += 50
         if turtle.stopped:
-            cost += 50
+            cost += 35
         if turtle.safe and turtle.bridge:
             cost -= 1000
         return cost

@@ -63,9 +63,6 @@ def breed_turtles(problem, params):
     pop.sort(key=lambda x: x.cost, reverse=False)
 
     print("THERE ARE {} TURTLES IN POP".format(len(pop)))
-    for turtle in pop:
-        if turtle.cost < best_solution.cost:
-            best_solution.gene = turtle.gene.copy()
 
     # Best cost of Iterations
     best_cost_over_iterations = np.empty(maxit)  # array of maxit empty spots
@@ -80,14 +77,19 @@ def breed_turtles(problem, params):
     for k in range(nc // 2):  # nc is the number of children, a control variable, divided by 2
         # Selecting Parents here
         p1_gene = pop[0].gene.copy()
-        p2_gene = pop[1].gene.copy()
+        p2_gene = pop[k].gene.copy()
 
         # Perform Crossover
-        c1, c2 = crossover(p1_gene, p2_gene, mu)
+        #c1, c2 = crossover(p1_gene, p2_gene, mu)
+        if not pop[0].safe:
+            p1_gene = mutate(p1_gene, mu)
+
+        if not pop[k].safe:
+            p2_gene = mutate(p2_gene, mu)
 
         # Add children to population of children
-        children_gene_pool.append(c1)
-        children_gene_pool.append(c2)
+        children_gene_pool.append(p1_gene)
+        children_gene_pool.append(p2_gene)
 
     return children_gene_pool
 

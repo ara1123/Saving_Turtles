@@ -24,7 +24,7 @@ params.maxit = 100          # Max iterations
 params.npop = 30           # Max population size (chromosomes)
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
 params.gamma = 0.1          # Randomization factor between parents and children
-params.mu = 20             # mutation factor. Higher = less mutation
+params.mu = 5             # mutation factor. Higher = less mutation
 params.sigma = 0.1          # The std. dev. for the mutation function
 params.beta = 1             # Parent selection variable
 params.it = 0
