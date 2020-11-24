@@ -24,7 +24,7 @@ params.maxit = 100          # Max iterations
 params.npop = 10           # Max population size (chromosomes)
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
 params.gamma = 0.1          # Randomization factor between parents and children
-params.mu = 3             # The mean for the mutation function, which is a Gaussian distribution
+params.mu = 6             # The mean for the mutation function, which is a Gaussian distribution
 params.sigma = 0.1          # The std. dev. for the mutation function
 params.beta = 1             # Parent selection variable
 params.it = 0
@@ -34,13 +34,13 @@ turtle_game.init_turtles(params)
 
 # Data from genetic algorithm
 best_costs_over_it = []
-best_turtles_from_each_it = []
 
 # Run game with initial, random population
 turtle_game.run_game()
 main_pop = turtle_game.retired_turtles.copy()
 turtle_game.reset()
 
+epoch = 1
 while True:
 
   # Store turtle list in data structure for ga
@@ -62,11 +62,14 @@ while True:
   # Merge, sort, and select to get new population
   popc = turtle_game.retired_turtles.copy()
   turtle_game.retired_turtles.clear()
-  main_pop = ga.sort_select(main_pop, popc)
+  out = ga.sort_select(main_pop, popc)
+  main_pop = out.pop.copy()
+  best_cost = out.best_cost
+  avg_cost = out.avg_cost
 
-  # Implement these later
-  # best_costs_over_it.append(out.best)
+  print("\n\nEPOCH: {} \n BEST COST: {} \n AVG COST: {}".format(epoch, best_cost, avg_cost))
+  epoch += 1
+  best_costs_over_it.append(out.best)
 
-  # best_turtles_from_each_it.append(out.best_solution)
 
 

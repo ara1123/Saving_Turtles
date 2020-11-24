@@ -49,31 +49,31 @@ class game:
                    X: IMPASSE}
 
     """DEFINE MAP"""
-    map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, F, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, F, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, M, F, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, F, G, G, X, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, F, M, G, G, G, G, R, R, G, G, F, F, G, G, W],
-                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
+    # map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+    #                [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+    #                [G, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+    #                [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+    #                [G, G, F, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
+    #                [G, G, F, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
+    #                [G, M, F, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
+    #                [G, G, F, G, G, X, G, G, R, R, G, G, G, G, G, G, W],
+    #                [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
+    #                [G, G, F, M, G, G, G, G, R, R, G, G, F, F, G, G, W],
+    #                [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+    #                [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
 
-    # map1 = np.array([random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17)])
+    map1 = np.array([random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17),
+                     random.choices(Tiles, k=17)])
 
     # Creating the road and left water edge in the randomized map
     for i in range(12):
@@ -100,6 +100,8 @@ class game:
     game_active = True
     wall_list = []
     redx_list = []
+    check_list = []
+    water_list = []
 
     # Car
     road_edge_left = 8
@@ -126,7 +128,7 @@ class game:
 
     """ EVENTS """
     SPAWNCAR = pygame.USEREVENT
-    pygame.time.set_timer(SPAWNCAR, 900)  # Will probably make this a lot slower in the actual game
+    pygame.time.set_timer(SPAWNCAR, 2000)  # Will probably make this a lot slower in the actual game
 
     """ HELPER FUNCTIONS """
 
@@ -138,7 +140,6 @@ class game:
         for n in range(num_turtles):
             turt_params.path = self.create_random_path()
             turt_params.gene = gu.coords_to_cardinal(turt_params.path)
-            print("Turned this path \n {} \n into this gene \n {} \n\n".format(turt_params.path, turt_params.gene))
             t_obj = turtle(turt_params)
             self.turtle_list.append(t_obj)
 
@@ -154,7 +155,7 @@ class game:
           self.turtle_list.append(t_obj)
 
     def calc_cost(self, turtle):
-        cost = 0
+        cost = 2000
 
         # for coord in positioning:
         #     if coord[0] > x_pos_old:
@@ -167,15 +168,17 @@ class game:
         #     x_pos_old = coord[0]
 
         # Simpler to do it this way? With pixels instead of tiles
-        cost -= 0.1*turtle.rect.centerx
-        cost += 0.05*turtle.effort
+        cost -= 0.5*turtle.rect.centerx
+        cost += 0.3*turtle.effort
 
         if turtle.bridge:
             cost -= 300
         if turtle.dead:
-            cost += 100
+            cost += 300
         if turtle.stopped:
-            cost += 15
+            cost += 200
+        if turtle.safe:
+            cost -= 1000
         return cost
 
     # Assumes a road of width 2 that vertically bisects the map in a straight line
@@ -291,6 +294,9 @@ class game:
             if turtle.path[path_ind] == current_tile:
                 path_ind += 1
                 turtle.iteration = path_ind
+            elif turtle.path[path_ind] == current_tile and path_ind >= len(turtle.path):
+                turtle.stop()
+                continue
             # print("\nGoing to ", turtle.path[path_ind])
             diffx = turtle.path[path_ind][0] - current_tile[0]
             diffy = turtle.path[path_ind][1] - current_tile[1]
@@ -312,15 +318,17 @@ class game:
             turtle.effort += 1
             self.screen.blit(turtle.surf, turtle.rect)
 
-    def pop_wall_list(self):
-        res = []
+    def pop_special_tiles_lists(self):
         for row in range(self.height):
             for col in range(self.width):
                 if self.map1[row][col] == self.X:
                     surface = self.TileTexture[self.map1[row][col]]
                     rect = surface.get_rect(topleft=(col * self.tilesize, row * self.tilesize))
-                    res.append(rect)
-        return res
+                    self.wall_list.append(rect)
+                elif self.map1[row][col] == self.X:
+                    surface = self.TileTexture[self.map1[row][col]]
+                    rect = surface.get_rect(topleft=(col * self.tilesize, row * self.tilesize))
+                    self.water_list.append(rect)
 
     # Call this function when a turtle dies or is stopped.
     # This does several things
@@ -342,6 +350,11 @@ class game:
 
                 # Add to retired turtles list
                 self.retired_turtles.append(turtle)
+            elif turtle.safe:
+                check = structure()
+                check.surf = self.CHECK
+                check.rect = check.surf.get_rect(center=pos)
+                self.check_list.append(check)
             else:
                 res_list.append(turtle)
         self.turtle_list = res_list
@@ -373,6 +386,9 @@ class game:
                 if turtle.rect.colliderect(wall):
                     # print("HIT WALL")
                     turtle.stop()
+            for water in self.water_list:
+                if turtle.rect.colliderect(water):
+                    turtle.safe = True
             for car in self.car_list:
                 if turtle.rect.colliderect(car):
                     if turtle.rect.colliderect(self.brg.rect):
@@ -390,7 +406,8 @@ class game:
         pygame.init()
         self.screen = pygame.display.set_mode((self.width * self.tilesize, self.height * self.tilesize))
         self.REDX = gu.load_half_tilesz(self.img_path + "redx.png", self.tilesize)
-        self.wall_list = self.pop_wall_list()
+        self.CHECK = gu.load_half_tilesz(self.img_path + "check.png", self.tilesize)
+        self.pop_special_tiles_lists()
         self.brg.load_pic(self.img_path + "bridge.jpeg", self.tilesize)
 
     def set_turtle_list(self, turtles):

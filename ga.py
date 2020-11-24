@@ -62,7 +62,6 @@ def breed_turtles(problem, params):
     # Sorting by best cost. the more positive the better
     pop.sort(key=lambda x: x.cost, reverse=False)
 
-    print("THERE ARE {} TURTLES IN POP".format(len(pop)))
     for turtle in pop:
         if turtle.cost < best_solution.cost:
             best_solution.gene = turtle.gene.copy()
@@ -97,7 +96,18 @@ def sort_select(pop, popc):
     pop += popc
     pop = sorted(pop, key=lambda x: x.cost)
     pop = pop[0:npop]
-    return pop
+    costs = []
+    for turtle in pop:
+        costs.append(turtle.cost)
+
+    best_cost = min(costs)
+    avg_cost = np.mean(costs)
+
+    out = structure()
+    out.pop = pop
+    out.avg_cost = avg_cost
+    out.best_cost = best_cost
+    return out
 
 
 def crossover(p1, p2, mu):
