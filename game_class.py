@@ -51,10 +51,10 @@ class game:
     """DEFINE MAP"""
     map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, F, G, G, G, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
+                   [G, G, F, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, M, F, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
                    [G, G, F, G, G, X, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
@@ -94,7 +94,7 @@ class game:
     # Map
     width = len(map1[0])
     height = len(map1)
-    print("MAP1 is {} long and {} high".format(width, height))
+    # print("MAP1 is {} long and {} high".format(width, height))
     start = (tilesize // 2, (height * tilesize) // 2 - tilesize // 2)
     end = (width * tilesize, (height * tilesize) // 2)
     game_active = True
@@ -108,7 +108,7 @@ class game:
     car_spawn_bot = road_edge_right * tilesize - (tilesize // 2)
     car_speed = 5
     car_picture = img_path + "car3.png"
-    print("THESE", road_edge_left, road_edge_right)
+    # print("THESE", road_edge_left, road_edge_right)
 
     # Bridge
     bridge_params = structure()
@@ -138,6 +138,7 @@ class game:
         for n in range(num_turtles):
             turt_params.path = self.create_random_path()
             turt_params.gene = gu.coords_to_cardinal(turt_params.path)
+            print("Turned this path \n {} \n into this gene \n {} \n\n".format(turt_params.path, turt_params.gene))
             t_obj = turtle(turt_params)
             self.turtle_list.append(t_obj)
 
@@ -215,7 +216,7 @@ class game:
           turtle.stop()
           return 0
         tile_type = self.map1[y-1,x-1]
-        print("On tile {} {} which is a tile of type {}".format(x,y,tile_type))
+        # print("On tile {} {} which is a tile of type {}".format(x,y,tile_type))
         return self.TileSpeed[tile_type]
 
     def create_random_path(self):
@@ -370,14 +371,14 @@ class game:
                 turtle.stop()
             for wall in self.wall_list:
                 if turtle.rect.colliderect(wall):
-                    print("HIT WALL")
+                    # print("HIT WALL")
                     turtle.stop()
             for car in self.car_list:
                 if turtle.rect.colliderect(car):
                     if turtle.rect.colliderect(self.brg.rect):
                         turtle.bridge = True
                         continue
-                    print("HIT CAR")
+                    # print("HIT CAR")
                     turtle.kill()
 
     def display_bridge(self):

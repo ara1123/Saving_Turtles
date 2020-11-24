@@ -16,11 +16,7 @@ from ypstruct import structure
 from turtle_class import turtle
 import pygame
 
-
-def run(problem, params):
-
-
-
+"""def run(problem, params):
     # Merge, sort, and select
     pop += pop_children
     pop = sorted(pop, key=lambda x: x.cost, reverse=True)   # Sorting population by each element's cost
@@ -35,12 +31,12 @@ def run(problem, params):
     out.best_solution = best_solution
     out.best_cost = best_cost
 
-    return out
+    return out"""
+
 
 # Create children,
 def breed_turtles(problem, params):
     # Extracting Problem information
-    costfunc = problem.costfunc
     nvar = problem.nvar
     varmin = problem.varmin
     varmax = problem.varmax
@@ -51,7 +47,7 @@ def breed_turtles(problem, params):
     npop = params.npop
     beta = params.beta
     pc = params.pc
-    nc = int(np.round(pc*npop/2)*2)            # a ratio times total pop, rounded to make sure it is an integer value
+    nc = int(np.round(pc * npop / 2) * 2)  # a ratio times total pop, rounded to make sure it is an integer value
     gamma = params.gamma
     mu = params.mu
     sigma = params.sigma
@@ -60,77 +56,79 @@ def breed_turtles(problem, params):
     # Best Solution found
     best_solution = structure()
     best_solution.path = []
-    best_solution.cost = np.inf               # This is the default value, which should be the worst case scenario
+    best_solution.cost = np.inf  # This is the default value, which should be the worst case scenario
 
     pop = turtle_list
+    # Sorting by best cost. the more positive the better
+    pop.sort(key=lambda x: x.cost, reverse=False)
+
     print("THERE ARE {} TURTLES IN POP".format(len(pop)))
     for turtle in pop:
         if turtle.cost < best_solution.cost:
             best_solution.gene = turtle.gene.copy()
 
     # Best cost of Iterations
-    best_cost_over_iterations = np.empty(maxit)     # array of maxit empty spots
+    best_cost_over_iterations = np.empty(maxit)  # array of maxit empty spots
 
-    costs = np.array([turtle.cost for turtle in pop])   # List of costs for every member in population
+    costs = np.array([turtle.cost for turtle in pop])  # List of costs for every member in population
     avg_cost = np.mean(costs)
     if avg_cost != 0:
-        costs = costs/avg_cost
+        costs = costs / avg_cost
 
-    c_gene_pool = []
+    children_gene_pool = []
 
-    for k in range(nc//2):          # nc is the number of children, a control variable, divided by 2
+    for k in range(nc // 2):  # nc is the number of children, a control variable, divided by 2
         # Selecting Parents here
-        q = np.random.permutation(npop)     # Randomly selecting the indices of parent list, so parents are RANDOM!!!!
-        p1_gene = pop[q[0]].gene.copy()
-        p2_gene = pop[q[1]].gene.copy()
+        p1_gene = pop[k].gene.copy()
+        p2_gene = pop[k+1].gene.copy()
 
         # Perform Crossover
-        c1, c2 = crossover(p1_gene, p2_gene, gamma)
-
-        c1 = mutate(c1, mu, sigma)
-        c2 = mutate(c2, mu, sigma)
+        c1, c2 = crossover(p1_gene, p2_gene, mu)
 
         # Add children to population of children
         children_gene_pool.append(c1)
         children_gene_pool.append(c2)
 
-    return c_gene_pool
+    return children_gene_pool
+
 
 def sort_select(pop, popc):
-    npop = len(o)
+    npop = len(pop)
     pop += popc
     pop = sorted(pop, key=lambda x: x.cost)
     pop = pop[0:npop]
     return pop
 
-#Anthony, this will need to be different. His method doesn't work or apply here I'm pretty sure.
-def crossover(p1, p2, gamma):
-    c1 = np.array(p1)
-    c2 = np.array(p2)
-    print("Gene of child 1", c1)
-    alpha = np.random.uniform(-gamma, 1+gamma, c1.shape()) # * converts the tuple to a list of distinct values/arguments
-    c1 = alpha*p1 + (1-alpha)*p2
-    c2 = alpha*p2 + (1-alpha)*p1
-    return c1.to_list(), c2.to_list()
+
+def crossover(p1, p2, mu):
+    # For half of the first parents, + half of the seconds, so parent's path length isnt an issue
+    c1_gene = p1[:len(p1) // 2] + p2[len(p2) // 2:]
+    c2_gene = p2[:len(p2) // 2] + p1[len(p1) // 2:]
+
+    c1_gene = mutate(c1_gene, mu)
+    c2_gene = mutate(c2_gene, mu)
+
+    return c1_gene, c2_gene
 
 
-def mutate(x, mu, sigma):
-    y = np.array(x)
-    flag = (np.random.rand(*x.gene.shape) <= mu)    # an array of boolean entities
-    ind = np.argwhere(flag)                             # A list of the indices where it is true
-    y.gene[ind] += (mu + sigma*np.random.randn(*ind.shape))    # anthony has a picture explaining where this came from
+def mutate(x, mu):
+    m_gene = x
+    # We may want to remove west/southwest from the lineup, so the little bastards cant backtrack
+    # [N, NE, E, SE, S, SW, W, NW]
+    directions = [0, 1, 2, 3, 4, 5, 2, 7]
 
-    return y.to_list()
+    for index in range(0, len(m_gene), mu):
+        m_gene[index] = random.choice(directions)
 
+    # Adding two more movements, so that turtles have capabilities beyond the parent
+    for i in range(100):
+        m_gene.append(random.choice(directions))
 
-def apply_bounds(x, varmin, varmax):
-    x.gene = np.maximum(x.gene, varmin)         # The result of this will always be >= varmin
-    x.gene = np.minimum(x.gene, varmax)         # The result of this will always be <= varmax
+    return m_gene
 
-    return x
 
 def roulette_wheel_selection(p):
     c = np.cumsum(p)
-    r = sum(p)*np.random.rand()
+    r = sum(p) * np.random.rand()
     ind = np.argwhere(r <= c)
     return ind[0][0]
