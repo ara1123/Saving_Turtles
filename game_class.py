@@ -26,7 +26,7 @@ class game:
     X = 5  # CLIFF/FENCE - IMPASSABLE AREA
 
     # Defining tiles that should autopopulate in the map
-    Tiles = (G, F, M)
+    Tiles = (G, F, M, X)
 
     """DEFINE TILE COLORS/TEXTURES"""
     img_path = "assets/"
@@ -49,7 +49,7 @@ class game:
                    X: IMPASSE}
 
     """DEFINE MAP"""
-    """map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+    map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
@@ -60,20 +60,20 @@ class game:
                    [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, G, G, G, G, R, R, G, G, F, F, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])"""
+                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
 
-    map1 = np.array([random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17),
-                      random.choices(Tiles, k=17)])
+    """map1 = np.array([random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 0], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 0], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17),
+                      random.choices(Tiles, weights=[40, 30, 20, 10], k=17)])"""
 
     # Creating the road and left water edge in the randomized map
     for i in range(12):
@@ -112,8 +112,8 @@ class game:
 
     # Bridge
     bridge_params = structure()
-    bridge_params.top = height - 1
-    bridge_params.bot = 0
+    bridge_params.top = height - 3
+    bridge_params.bot = 4
     bridge_params.left = 8
     bridge_params.tilesize = tilesize
     brg = bridge(bridge_params)
@@ -155,27 +155,28 @@ class game:
 
     def calc_cost(self, turtle):
         cost = 0
+        x_pos_old = -1
+        positioning = turtle.path
 
-        # for coord in positioning:
-        #     if coord[0] > x_pos_old:
-        #         reward += 10
-        #     elif coord[0] == x_pos_old:
-        #         reward += 2
-        #     elif coord[0] < x_pos_old:
-        #         reward -= 5
+        for coord in positioning:
+            if coord[0] > x_pos_old:
+                cost -= 10
+            elif coord[0] == x_pos_old:
+                cost -= 2
+            elif coord[0] < x_pos_old:
+                cost += 5
+            x_pos_old = coord[0]
 
-        #     x_pos_old = coord[0]
-
-        # Simpler to do it this way? With pixels instead of tiles
+        """# Simpler to do it this way? With pixels instead of tiles
         cost -= 0.1*turtle.rect.centerx
-        cost += 0.05*turtle.effort
+        cost += 0.05*turtle.effort"""
 
         if turtle.bridge:
             cost -= 300
         if turtle.dead:
-            cost += 100
+            cost += 50
         if turtle.stopped:
-            cost += 15
+            cost += 50
         return cost
 
     # Assumes a road of width 2 that vertically bisects the map in a straight line
@@ -247,13 +248,13 @@ class game:
         while True:
             x, y = current_tile
             choices = np.array([[x + 1, y],
-                                [x - 1, y],
+                                #[x - 1, y],
                                 [x, y + 1],
                                 [x, y - 1],
                                 [x + 1, y + 1],
-                                [x + 1, y - 1],
-                                [x - 1, y + 1],
-                                [x - 1, y - 1]])
+                                [x + 1, y - 1],])
+                                #[x - 1, y + 1],
+                                #[x - 1, y - 1]])
 
             # Make sure to not travel back to previous tile
             choices = remove_tile(prev_tile, choices)

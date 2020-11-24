@@ -116,14 +116,15 @@ def mutate(x, mu):
     m_gene = x
     # We may want to remove west/southwest from the lineup, so the little bastards cant backtrack
     # [N, NE, E, SE, S, SW, W, NW]
-    directions = [0, 1, 2, 3, 4, 5, 2, 7]
+    # I removed SW/W/NW aka 5/6/7 from the lineup. these turtles cannot be trusted with such directions.
+    directions = [0, 1, 2, 3, 4, 5, 7]
 
-    for index in range(0, len(m_gene), mu):
+    for index in range(3, len(m_gene), mu):
         m_gene[index] = random.choice(directions)
 
     # Adding more movements, so that turtles have capabilities beyond the parent
-    for i in range(100):
-        m_gene.append(random.choice(directions))
+    for i in range(10):
+        m_gene.append(2)
 
     return m_gene
 

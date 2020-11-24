@@ -18,7 +18,7 @@ class bridge:
 
     def load_pic(self, img_path, tilesize):
       img = Image.open(img_path)
-      img = img.resize((tilesize * 2, tilesize))
+      img = img.resize((tilesize * 2, tilesize*2))
       surface = pygame.image.fromstring(img.tobytes(), img.size, img.mode)
       surface.convert_alpha()
       self.surf = surface
