@@ -105,8 +105,8 @@ def crossover(p1, p2, mu):
     c1_gene = p1[:len(p1) // 2] + p2[len(p2) // 2:]
     c2_gene = p2[:len(p2) // 2] + p1[len(p1) // 2:]
 
-    c1_gene = mutate(c1_gene, mu)
-    c2_gene = mutate(c2_gene, mu)
+    #c1_gene = mutate(c1_gene, mu)
+    #c2_gene = mutate(c2_gene, mu)
 
     return c1_gene, c2_gene
 

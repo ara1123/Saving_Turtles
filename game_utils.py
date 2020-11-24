@@ -30,7 +30,7 @@ E = 2
 SE = 3
 S = 4
 SW = 5
-W = 6
+W = 2
 NW = 7
 
 def coords_to_cardinal(path):
@@ -66,8 +66,9 @@ def coords_to_cardinal(path):
 
 def card_to_coords(start, card):
   path = [start]
-  x = start[0]
-  y = start[1]
+  x = 0
+  y = 6
+  path[0] = (x, y)
   for move in card:
     if move == N:
       y += 1
