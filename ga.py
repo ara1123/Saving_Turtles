@@ -60,7 +60,7 @@ def breed_turtles(problem, params):
 
     pop = turtle_list
     # Sorting by best cost. the more positive the better
-    pop.sort(key=lambda x: x.cost, reverse=True)
+    pop.sort(key=lambda x: x.cost, reverse=False)
 
     print("THERE ARE {} TURTLES IN POP".format(len(pop)))
     for turtle in pop:
@@ -105,8 +105,8 @@ def crossover(p1, p2, mu):
     c1_gene = p1[:len(p1) // 2] + p2[len(p2) // 2:]
     c2_gene = p2[:len(p2) // 2] + p1[len(p1) // 2:]
 
-    #c1_gene = mutate(c1_gene, mu)
-    #c2_gene = mutate(c2_gene, mu)
+    c1_gene = mutate(c1_gene, mu)
+    c2_gene = mutate(c2_gene, mu)
 
     return c1_gene, c2_gene
 
@@ -114,23 +114,17 @@ def crossover(p1, p2, mu):
 def mutate(x, mu):
     m_gene = x
     # We may want to remove west/southwest from the lineup, so the little bastards cant backtrack
-    directions = [0, 1, 2, 3, 4, 5, 6, 7]
+    # [N, NE, E, SE, S, SW, W, NW]
+    directions = [0, 1, 2, 3, 4, 5, 2, 7]
 
     for index in range(0, len(m_gene), mu):
         m_gene[index] = random.choice(directions)
 
     # Adding two more movements, so that turtles have capabilities beyond the parent
-    m_gene.append(random.choice(directions))
-    m_gene.append(random.choice(directions))
+    for i in range(100):
+        m_gene.append(random.choice(directions))
 
     return m_gene
-
-
-def apply_bounds(x, varmin, varmax):
-    x.gene = np.maximum(x.gene, varmin)  # The result of this will always be >= varmin
-    x.gene = np.minimum(x.gene, varmax)  # The result of this will always be <= varmax
-
-    return x
 
 
 def roulette_wheel_selection(p):

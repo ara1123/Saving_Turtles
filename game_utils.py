@@ -30,7 +30,7 @@ E = 2
 SE = 3
 S = 4
 SW = 5
-W = 2
+W = 2     # experimenting with not letting them backtrack
 NW = 7
 
 def coords_to_cardinal(path):

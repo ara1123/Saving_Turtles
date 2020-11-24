@@ -21,7 +21,7 @@ problem.varmax = 7         # Maximum value of variables
 # GA Parameters
 params = structure()
 params.maxit = 100          # Max iterations
-params.npop = 6           # Max population size (chromosomes)
+params.npop = 10           # Max population size (chromosomes)
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
 params.gamma = 0.1          # Randomization factor between parents and children
 params.mu = 3             # The mean for the mutation function, which is a Gaussian distribution

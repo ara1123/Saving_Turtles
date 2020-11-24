@@ -51,10 +51,10 @@ class game:
     """DEFINE MAP"""
     map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, F, G, G, G, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
-                   [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
+                   [G, G, F, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
+                   [G, G, F, M, M, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, M, F, G, G, X, G, G, R, R, G, G, X, G, G, G, W],
                    [G, G, F, G, G, X, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
