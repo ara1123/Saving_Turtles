@@ -49,7 +49,7 @@ class game:
                    X: IMPASSE}
 
     """DEFINE MAP"""
-    map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
+    """map1 = np.array([[F, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, M, G, G, G, R, R, G, G, X, G, G, G, W],
@@ -60,20 +60,20 @@ class game:
                    [G, G, F, M, G, G, G, G, R, R, G, G, G, G, G, G, W],
                    [G, G, F, M, G, G, G, G, R, R, G, G, F, F, G, G, W],
                    [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W],
-                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])
+                   [G, G, G, G, G, G, G, G, R, R, G, G, G, G, G, G, W]])"""
 
-    # map1 = np.array([random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17),
-    #                  random.choices(Tiles, k=17)])
+    map1 = np.array([random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17),
+                      random.choices(Tiles, k=17)])
 
     # Creating the road and left water edge in the randomized map
     for i in range(12):

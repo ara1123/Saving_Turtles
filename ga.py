@@ -79,8 +79,8 @@ def breed_turtles(problem, params):
 
     for k in range(nc // 2):  # nc is the number of children, a control variable, divided by 2
         # Selecting Parents here
-        p1_gene = pop[k].gene.copy()
-        p2_gene = pop[k+1].gene.copy()
+        p1_gene = pop[0].gene.copy()
+        p2_gene = pop[1].gene.copy()
 
         # Perform Crossover
         c1, c2 = crossover(p1_gene, p2_gene, mu)
@@ -102,9 +102,10 @@ def sort_select(pop, popc):
 
 def crossover(p1, p2, mu):
     # For half of the first parents, + half of the seconds, so parent's path length isnt an issue
-    c1_gene = p1[:len(p1) // 2] + p2[len(p2) // 2:]
-    c2_gene = p2[:len(p2) // 2] + p1[len(p1) // 2:]
-
+    #c1_gene = p1[:len(p1) // 2] + p2[len(p2) // 2:]
+    #c2_gene = p2[:len(p2) // 2] + p1[len(p1) // 2:]
+    c1_gene = p1
+    c2_gene = p2
     c1_gene = mutate(c1_gene, mu)
     c2_gene = mutate(c2_gene, mu)
 
@@ -120,7 +121,7 @@ def mutate(x, mu):
     for index in range(0, len(m_gene), mu):
         m_gene[index] = random.choice(directions)
 
-    # Adding two more movements, so that turtles have capabilities beyond the parent
+    # Adding more movements, so that turtles have capabilities beyond the parent
     for i in range(100):
         m_gene.append(random.choice(directions))
 
