@@ -61,6 +61,9 @@ class turtle(object):
   def stop(self):
     self.stopped = True
 
+  def save(self):
+    self.safe = True
+
   def reset(self):
     self.iteration = 0
     self.effort = 0

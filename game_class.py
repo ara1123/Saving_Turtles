@@ -155,7 +155,7 @@ class game:
           self.turtle_list.append(t_obj)
 
     def calc_cost(self, turtle):
-        cost = 2000
+        cost = 1000
 
         # for coord in positioning:
         #     if coord[0] > x_pos_old:
@@ -174,7 +174,7 @@ class game:
         if turtle.bridge:
             cost -= 300
         if turtle.dead:
-            cost += 300
+            cost += 600
         if turtle.stopped:
             cost += 200
         if turtle.safe:
@@ -325,7 +325,7 @@ class game:
                     surface = self.TileTexture[self.map1[row][col]]
                     rect = surface.get_rect(topleft=(col * self.tilesize, row * self.tilesize))
                     self.wall_list.append(rect)
-                elif self.map1[row][col] == self.X:
+                elif self.map1[row][col] == self.W:
                     surface = self.TileTexture[self.map1[row][col]]
                     rect = surface.get_rect(topleft=(col * self.tilesize, row * self.tilesize))
                     self.water_list.append(rect)
@@ -337,17 +337,15 @@ class game:
     def filter_out_turtles(self):
         res_list = []
         for turtle in self.turtle_list:
+            pos = (turtle.rect.centerx, turtle.rect.centery)
             if turtle.stopped:
                 # Get a red X
-                pos = (turtle.rect.centerx, turtle.rect.centery)
                 redx = structure()
                 redx.surf = self.REDX
                 redx.rect = redx.surf.get_rect(center=pos)
                 self.redx_list.append(redx)
-
                 # Calculate the cost of the turtle
                 turtle.cost = self.calc_cost(turtle)
-
                 # Add to retired turtles list
                 self.retired_turtles.append(turtle)
             elif turtle.safe:
@@ -355,13 +353,18 @@ class game:
                 check.surf = self.CHECK
                 check.rect = check.surf.get_rect(center=pos)
                 self.check_list.append(check)
+                turtle.cost = self.calc_cost(turtle)
+                self.retired_turtles.append(turtle)
             else:
                 res_list.append(turtle)
         self.turtle_list = res_list
 
-    def display_redx(self):
+    def display_markers(self):
         for x in self.redx_list:
             self.screen.blit(x.surf, x.rect)
+        for x in self.check_list:
+            self.screen.blit(x.surf, x.rect)
+
 
     def in_map(self, turtle):
         high = self.height * self.tilesize
@@ -388,7 +391,7 @@ class game:
                     turtle.stop()
             for water in self.water_list:
                 if turtle.rect.colliderect(water):
-                    turtle.safe = True
+                    turtle.save()
             for car in self.car_list:
                 if turtle.rect.colliderect(car):
                     if turtle.rect.colliderect(self.brg.rect):
@@ -445,7 +448,7 @@ class game:
             self.check_collision()
             self.filter_out_turtles()
             if self.redx_list:
-                self.display_redx()
+                self.display_markers()
             self.display_bridge()
             pygame.display.update()
             self.clock.tick(60)
@@ -453,6 +456,7 @@ class game:
     def reset(self):
         self.redx_list.clear()
         self.car_list.clear()
+        self.check_list.clear()
         for turtle in self.turtle_list:
           turtle.reset()
           turtle.rect.center = self.start

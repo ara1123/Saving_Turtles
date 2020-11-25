@@ -11,7 +11,7 @@ class bridge:
       map_bot = bridge_params.bot
       tilesize = bridge_params.tilesize
       self.x = left_pos * tilesize
-      self.y = random.randrange((map_bot - 1), map_top, 1) * tilesize
+      self.y = random.randrange((map_bot + 2), map_top - 2, 1) * tilesize
       self.rect = None
       self.surf = None
 

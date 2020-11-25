@@ -20,8 +20,9 @@ problem.varmax = 7         # Maximum value of variables
 
 # GA Parameters
 params = structure()
-params.maxit = 100          # Max iterations
-params.npop = 10           # Max population size (chromosomes)
+maxit = 100          # Max iterations
+params.npop = 30           # Max population size (chromosomes)
+params.nelites = 3
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
 params.gamma = 0.1          # Randomization factor between parents and children
 params.mu = 6             # The mean for the mutation function, which is a Gaussian distribution
@@ -34,6 +35,7 @@ turtle_game.init_turtles(params)
 
 # Data from genetic algorithm
 best_costs_over_it = []
+avg_costs_over_it = []
 
 # Run game with initial, random population
 turtle_game.run_game()
@@ -41,7 +43,8 @@ main_pop = turtle_game.retired_turtles.copy()
 turtle_game.reset()
 
 epoch = 1
-while True:
+while maxit != 0:
+  maxit -= 1
 
   # Store turtle list in data structure for ga
   problem.turtle_list = main_pop.copy()
@@ -67,9 +70,19 @@ while True:
   best_cost = out.best_cost
   avg_cost = out.avg_cost
 
-  print("\n\nEPOCH: {} \n BEST COST: {} \n AVG COST: {}".format(epoch, best_cost, avg_cost))
+  print("\n\nEPOCH: {} \nBEST COST: {} \nAVG COST: {}".format(epoch, best_cost, avg_cost))
   epoch += 1
-  best_costs_over_it.append(out.best)
+  best_costs_over_it.append(best_cost)
+  avg_costs_over_it.append(avg_cost)
+
+plt.semilogy(best_cost)
+plt.xlim(0, params.maxit)
+plt.xlabel("Iterations")
+plt.ylabel("Best Cost")
+plt.title("Simple Genetic Algorithm")
+plt.grid(True)
+plt.show()
+
 
 
 
