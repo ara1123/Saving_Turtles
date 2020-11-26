@@ -451,7 +451,7 @@ class game:
                 self.display_markers()
             self.display_bridge()
             pygame.display.update()
-            self.clock.tick(60)
+            self.clock.tick(120)
 
     def reset(self):
         self.redx_list.clear()

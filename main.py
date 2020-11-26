@@ -20,7 +20,7 @@ problem.varmax = 7         # Maximum value of variables
 
 # GA Parameters
 params = structure()
-maxit = 100          # Max iterations
+maxit = 50          # Max iterations
 params.npop = 30           # Max population size (chromosomes)
 params.nelites = 3
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
@@ -75,11 +75,11 @@ while maxit != 0:
   best_costs_over_it.append(best_cost)
   avg_costs_over_it.append(avg_cost)
 
-plt.semilogy(best_cost)
-plt.xlim(0, params.maxit)
+
+plt.plot(avg_costs_over_it, "bo")
 plt.xlabel("Iterations")
-plt.ylabel("Best Cost")
-plt.title("Simple Genetic Algorithm")
+plt.ylabel("Average Cost")
+plt.title("Average Cost Over Epochs")
 plt.grid(True)
 plt.show()
 

@@ -37,7 +37,6 @@ params.mu = 0.1             # The mean for the mutation function, which is a Gau
 params.sigma = 0.1          # The std. dev. for the mutation function
 params.beta = 1             # Parent selection variable
 
-
 # Run GA
 out = ga.run(problem,params)
 
