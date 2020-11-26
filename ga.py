@@ -52,20 +52,25 @@ def breed_turtles(problem, params):
     mu = params.mu
     sigma = params.sigma
     it = params.it
+    nelites = params.nelites
 
     # Best Solution found
     best_solution = structure()
-    best_solution.path = []
+    best_solution.gene = []
     best_solution.cost = np.inf  # This is the default value, which should be the worst case scenario
 
     pop = turtle_list
     # Sorting by best cost. the more positive the better
     pop.sort(key=lambda x: x.cost, reverse=False)
 
-    print("THERE ARE {} TURTLES IN POP".format(len(pop)))
+    elite_genes = []
     for turtle in pop:
         if turtle.cost < best_solution.cost:
             best_solution.gene = turtle.gene.copy()
+            best_solution.cost = turtle.cost
+            elite_genes.append(turtle.gene)
+
+    elite_genes = elite_genes[len(elite_genes)-nelites:]
 
     # Best cost of Iterations
     best_cost_over_iterations = np.empty(maxit)  # array of maxit empty spots
@@ -89,6 +94,7 @@ def breed_turtles(problem, params):
         children_gene_pool.append(c1)
         children_gene_pool.append(c2)
 
+    children_gene_pool.extend(elite_genes)
     return children_gene_pool
 
 
@@ -97,7 +103,18 @@ def sort_select(pop, popc):
     pop += popc
     pop = sorted(pop, key=lambda x: x.cost)
     pop = pop[0:npop]
-    return pop
+    costs = []
+    for turtle in pop:
+        costs.append(turtle.cost)
+
+    best_cost = min(costs)
+    avg_cost = np.mean(costs)
+
+    out = structure()
+    out.pop = pop
+    out.avg_cost = avg_cost
+    out.best_cost = best_cost
+    return out
 
 
 def crossover(p1, p2, mu):

@@ -20,11 +20,12 @@ problem.varmax = 7         # Maximum value of variables
 
 # GA Parameters
 params = structure()
-params.maxit = 100          # Max iterations
-params.npop = 10           # Max population size (chromosomes)
+maxit = 50          # Max iterations
+params.npop = 30           # Max population size (chromosomes)
+params.nelites = 3
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
 params.gamma = 0.1          # Randomization factor between parents and children
-params.mu = 3             # The mean for the mutation function, which is a Gaussian distribution
+params.mu = 6             # The mean for the mutation function, which is a Gaussian distribution
 params.sigma = 0.1          # The std. dev. for the mutation function
 params.beta = 1             # Parent selection variable
 params.it = 0
@@ -34,14 +35,16 @@ turtle_game.init_turtles(params)
 
 # Data from genetic algorithm
 best_costs_over_it = []
-best_turtles_from_each_it = []
+avg_costs_over_it = []
 
 # Run game with initial, random population
 turtle_game.run_game()
 main_pop = turtle_game.retired_turtles.copy()
 turtle_game.reset()
 
-while True:
+epoch = 1
+while maxit != 0:
+  maxit -= 1
 
   # Store turtle list in data structure for ga
   problem.turtle_list = main_pop.copy()
@@ -62,11 +65,24 @@ while True:
   # Merge, sort, and select to get new population
   popc = turtle_game.retired_turtles.copy()
   turtle_game.retired_turtles.clear()
-  main_pop = ga.sort_select(main_pop, popc)
+  out = ga.sort_select(main_pop, popc)
+  main_pop = out.pop.copy()
+  best_cost = out.best_cost
+  avg_cost = out.avg_cost
 
-  # Implement these later
-  # best_costs_over_it.append(out.best)
+  print("\n\nEPOCH: {} \nBEST COST: {} \nAVG COST: {}".format(epoch, best_cost, avg_cost))
+  epoch += 1
+  best_costs_over_it.append(best_cost)
+  avg_costs_over_it.append(avg_cost)
 
-  # best_turtles_from_each_it.append(out.best_solution)
+
+plt.plot(avg_costs_over_it, "bo")
+plt.xlabel("Iterations")
+plt.ylabel("Average Cost")
+plt.title("Average Cost Over Epochs")
+plt.grid(True)
+plt.show()
+
+
 
 
