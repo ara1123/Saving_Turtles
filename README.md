@@ -5,3 +5,5 @@ Current way to run is to run
 ```
 python3 main.py
 ```
+
+Packages required: ypstruct, matplotlib, pillow, pygame
