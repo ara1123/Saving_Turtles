@@ -45,12 +45,9 @@ def breed_turtles(problem, params):
     # Extracting Parameters
     maxit = params.maxit
     npop = params.npop
-    beta = params.beta
     pc = params.pc
     nc = int(np.round(pc * npop / 2) * 2)  # a ratio times total pop, rounded to make sure it is an integer value
-    gamma = params.gamma
     mu = params.mu
-    sigma = params.sigma
     it = params.it
     nelites = params.nelites
 

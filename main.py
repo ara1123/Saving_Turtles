@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+ #!/usr/bin/python3
 import pygame, sys
 import random
 import numpy as np
@@ -24,10 +24,7 @@ maxit = 50          # Max iterations
 params.npop = 30           # Max population size (chromosomes)
 params.nelites = 3
 params.pc = 1               # The ratio of children to parents. ie) 2 would mean double the amount of children than parents
-params.gamma = 0.1          # Randomization factor between parents and children
-params.mu = 6             # The mean for the mutation function, which is a Gaussian distribution
-params.sigma = 0.1          # The std. dev. for the mutation function
-params.beta = 1             # Parent selection variable
+params.mu = 6             # The mean for the mutation function
 params.it = 0
 turtle_game = game()
 turtle_game.init_game()
